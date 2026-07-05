@@ -6,15 +6,17 @@ import { ACCENT_RAMP, COLOR, GUTTER, ICON, RULE } from "../theme";
 interface NavItem {
   key: Section;
   label: string;
+  icon: string;
 }
 
 const FILTERS: NavItem[] = CATEGORIES.map((c) => ({
   key: c.key as Section,
   label: c.label,
+  icon: ICON[c.key],
 }));
 const LIBRARY: NavItem[] = [
-  { key: "downloads", label: "Downloads" },
-  { key: "seeding", label: "Seeding" },
+  { key: "downloads", label: "Загрузки", icon: ICON.down },
+  { key: "seeding", label: "Раздачи", icon: ICON.up },
 ];
 
 const BADGED = (key: Section): boolean => key === "downloads" || key === "seeding";
@@ -26,7 +28,7 @@ const NAV: NavItem[] = GROUPS.flat();
 const BADGE_W = " (00)".length;
 
 export const RAIL_WIDTH =
-  GUTTER + Math.max(...NAV.map((n) => n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
+  GUTTER + 2 + Math.max(...NAV.map((n) => n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
 
 export function Sidebar() {
   const { section, setSection, region, setRegion, queue } = useStore();
@@ -59,6 +61,14 @@ export function Sidebar() {
                       {ICON.bar}
                     </Text>
                   ) : null}
+                </Box>
+                <Box width={2} flexShrink={0}>
+                  <Text
+                    color={selected ? (focused ? COLOR.accent : COLOR.alt) : undefined}
+                    dimColor={!selected}
+                  >
+                    {item.icon}
+                  </Text>
                 </Box>
                 <Text
                   color={selected ? (focused ? COLOR.accent : COLOR.alt) : undefined}

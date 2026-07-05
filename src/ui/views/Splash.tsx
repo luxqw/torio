@@ -35,11 +35,11 @@ export function Splash() {
         <Logo />
       ) : (
         <Text bold color={COLOR.accent}>
-          torlink
+          torio
         </Text>
       )}
       <Box marginTop={2}>
-        <Text color={COLOR.text}>A curated, terminal-native torrent downloader.</Text>
+        <Text color={COLOR.text}>Торрент-клиент прямо в терминале.</Text>
       </Box>
       <Box>
         <Text dimColor>{CATEGORIES}</Text>
@@ -50,21 +50,21 @@ export function Splash() {
           width={barWidth}
           value=""
           editing
-          placeholder="Search or paste a magnet link…"
+          placeholder="Поиск или вставьте магнет-ссылку…"
           onSubmit={submitQuery}
         />
       </Box>
       <Box marginTop={1}>
         <Text>
           <Text color={COLOR.alt}>↵</Text>
-          <Text dimColor> search</Text>
+          <Text dimColor> поиск</Text>
           <Text dimColor>{`  ${ICON.dot}  `}</Text>
-          <Text dimColor>empty </Text>
+          <Text dimColor>пусто </Text>
           <Text color={COLOR.alt}>↵</Text>
-          <Text dimColor> browse</Text>
+          <Text dimColor> обзор</Text>
           <Text dimColor>{`  ${ICON.dot}  `}</Text>
           <Text color={COLOR.alt}>^c</Text>
-          <Text dimColor> quit</Text>
+          <Text dimColor> выход</Text>
         </Text>
       </Box>
     </Box>

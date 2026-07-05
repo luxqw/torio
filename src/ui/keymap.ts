@@ -1,8 +1,10 @@
 import type { DownloadFocus, Region, Section, SeedFocus } from "./store";
+import { ICON } from "./theme";
 
 export interface Hint {
   keys: string;
   label: string;
+  icon?: string;
 }
 
 interface HelpGroup {
@@ -12,53 +14,53 @@ interface HelpGroup {
 
 export const HELP_GROUPS: HelpGroup[] = [
   {
-    title: "Navigate",
+    title: "Навигация",
     hints: [
-      { keys: "↑ ↓ ← →, h j k l", label: "Navigate content and panes" },
-      { keys: "↵", label: "Open" },
-      { keys: "tab", label: "Switch pane" },
-      { keys: "esc", label: "Back" },
-      { keys: "o", label: "Download folder" },
-      { keys: "t", label: "Extra trackers" },
-      { keys: "q", label: "Quit" },
+      { keys: "↑ ↓ ← →, h j k l", label: "Навигация по контенту и панелям" },
+      { keys: "↵", label: "Открыть" },
+      { keys: "tab", label: "Смена панели" },
+      { keys: "esc", label: "Назад" },
+      { keys: "o", label: "Папка загрузок" },
+      { keys: "t", label: "Доп. трекеры" },
+      { keys: "q", label: "Выход" },
     ],
   },
   {
-    title: "Search",
+    title: "Поиск",
     hints: [
-      { keys: "/", label: "Edit search" },
-      { keys: "↵", label: "Run search" },
-      { keys: "s", label: "Sort results" },
-      { keys: "y", label: "Copy magnet" },
-      { keys: "m", label: "Paste magnet" },
+      { keys: "/", label: "Редакт. поиск" },
+      { keys: "↵", label: "Поиск" },
+      { keys: "s", label: "Сортировка" },
+      { keys: "y", label: "Коп. магнет" },
+      { keys: "m", label: "Вст. магнет" },
     ],
   },
   {
-    title: "Downloads",
+    title: "Загрузки",
     hints: [
-      { keys: "p", label: "Pause/resume" },
-      { keys: "c", label: "Cancel or remove from list" },
-      { keys: "f", label: "Retry failed" },
-      { keys: "d", label: "Download again" },
-      { keys: "x", label: "Clear recent" },
+      { keys: "p", label: "Пауза/прод." },
+      { keys: "c", label: "Отмена/удаление" },
+      { keys: "f", label: "Повтор ошибки" },
+      { keys: "d", label: "Скачать снова" },
+      { keys: "x", label: "Очистить" },
     ],
   },
   {
-    title: "Seeding",
+    title: "Раздачи",
     hints: [
-      { keys: "p", label: "Pause/resume" },
-      { keys: "c", label: "Remove from list" },
+      { keys: "p", label: "Пауза/прод." },
+      { keys: "c", label: "Удалить" },
     ],
   },
 ];
 
 // Footer labels stay terse so the contextual hint row never wraps; the `?`
 // overlay (HELP_GROUPS) carries the full, descriptive list.
-const NAVIGATE: Hint = { keys: "↑↓←→", label: "Move" };
+const NAVIGATE: Hint = { keys: "↑↓←→", label: "Движ.", icon: ICON.pointer };
 
-const ALWAYS: Hint = { keys: "?", label: "Keys" };
+const ALWAYS: Hint = { keys: "?", label: "Клавиши", icon: ICON.all };
 
-const SWITCH: Hint = { keys: "tab", label: "Switch" };
+const SWITCH: Hint = { keys: "tab", label: "Смена", icon: ICON.library };
 
 export function footerHints(
   region: Region,
@@ -69,42 +71,62 @@ export function footerHints(
   if (region === "sidebar") {
     return [
       NAVIGATE,
-      { keys: "↵", label: "Open" },
+      { keys: "↵", label: "Открыть", icon: ICON.open },
       SWITCH,
       ALWAYS,
-      { keys: "q", label: "Quit" },
+      { keys: "q", label: "Выход", icon: ICON.delete },
     ];
   }
   if (section === "seeding") {
     const label =
-      seedFocus === "seeding" ? "Pause" : seedFocus === "missing" ? "Retry" : "Resume";
-    return [{ keys: "p", label }, { keys: "c", label: "Remove" }, SWITCH, ALWAYS];
+      seedFocus === "seeding" ? "Пауза" : seedFocus === "missing" ? "Повтор" : "Прод.";
+    return [
+      { keys: "p", label, icon: ICON.pauseplay },
+      { keys: "c", label: "Удалить", icon: ICON.delete },
+      SWITCH,
+      ALWAYS,
+    ];
   }
   if (section === "downloads") {
     if (downloadFocus === "paused") {
-      return [{ keys: "p", label: "Resume" }, { keys: "c", label: "Cancel" }, SWITCH, ALWAYS];
-    }
-    if (downloadFocus === "failed") {
-      return [{ keys: "f", label: "Retry" }, { keys: "c", label: "Remove" }, SWITCH, ALWAYS];
-    }
-    if (downloadFocus === "recent") {
       return [
-        NAVIGATE,
-        { keys: "d", label: "Download again" },
-        { keys: "c", label: "Remove" },
-        { keys: "x", label: "Clear" },
+        { keys: "p", label: "Прод.", icon: ICON.pauseplay },
+        { keys: "c", label: "Отмена", icon: ICON.stop },
         SWITCH,
         ALWAYS,
       ];
     }
-    return [{ keys: "p", label: "Pause" }, { keys: "c", label: "Cancel" }, SWITCH, ALWAYS];
+    if (downloadFocus === "failed") {
+      return [
+        { keys: "f", label: "Повтор", icon: ICON.retry },
+        { keys: "c", label: "Удалить", icon: ICON.delete },
+        SWITCH,
+        ALWAYS,
+      ];
+    }
+    if (downloadFocus === "recent") {
+      return [
+        NAVIGATE,
+        { keys: "d", label: "Заново", icon: ICON.retry },
+        { keys: "c", label: "Удалить", icon: ICON.delete },
+        { keys: "x", label: "Очистить", icon: ICON.clear },
+        SWITCH,
+        ALWAYS,
+      ];
+    }
+    return [
+      { keys: "p", label: "Пауза", icon: ICON.pauseplay },
+      { keys: "c", label: "Отмена", icon: ICON.stop },
+      SWITCH,
+      ALWAYS,
+    ];
   }
   return [
     NAVIGATE,
-    { keys: "d", label: "Download" },
-    { keys: "y", label: "Copy" },
-    { keys: "s", label: "Sort" },
-    { keys: "/", label: "Search" },
+    { keys: "d", label: "Скачать", icon: ICON.down },
+    { keys: "y", label: "Коп.", icon: ICON.copy },
+    { keys: "s", label: "Сорт.", icon: ICON.sort },
+    { keys: "/", label: "Поиск", icon: ICON.search },
     SWITCH,
     ALWAYS,
   ];

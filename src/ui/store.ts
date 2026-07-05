@@ -12,11 +12,11 @@ export type Category = "all" | "games" | "movies" | "tv" | "anime";
 export type Section = Category | "downloads" | "seeding";
 
 export const CATEGORIES: { key: Category; label: string; group?: SourceGroup }[] = [
-  { key: "all", label: "All" },
-  { key: "games", label: "Games", group: "Games" },
-  { key: "movies", label: "Movies", group: "Movies" },
-  { key: "tv", label: "TV", group: "TV" },
-  { key: "anime", label: "Anime", group: "Anime" },
+  { key: "all", label: "Всё" },
+  { key: "games", label: "Игры", group: "Games" },
+  { key: "movies", label: "Фильмы", group: "Movies" },
+  { key: "tv", label: "ТВ", group: "TV" },
+  { key: "anime", label: "Аниме", group: "Anime" },
 ];
 
 export type Region = "sidebar" | "content" | "help";
@@ -74,7 +74,7 @@ export const StoreContext = createContext<Store | null>(null);
 
 export function useStore(): Store {
   const s = useContext(StoreContext);
-  if (!s) throw new Error("Store not available");
+  if (!s) throw new Error("Хранилище недоступно");
   return s;
 }
 

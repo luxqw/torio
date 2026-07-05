@@ -22,6 +22,7 @@ import {
   type View,
 } from "./store";
 import { Logo } from "./components/Logo";
+import { LOGO_LINES, LOGO_WIDTH } from "./logo";
 import { Sidebar, RAIL_WIDTH } from "./components/Sidebar";
 import { Rule } from "./components/Rule";
 import { Footer } from "./components/Footer";
@@ -176,11 +177,11 @@ export function App({
         list.length === config.trackers.length &&
         list.every((t, i) => t === config.trackers[i]);
       if (same) {
-        setNotice("Trackers unchanged.");
+        setNotice("Трекеры без изменений.");
         return;
       }
       setConfig({ ...config, trackers: list });
-      setNotice(list.length === 0 ? "Cleared extra trackers." : `Saved ${list.length} tracker${list.length === 1 ? "" : "s"}.`);
+      setNotice(list.length === 0 ? "Доп. трекеры очищены." : `Сохранено ${list.length} трекер${list.length === 1 ? "" : "ов"}.`);
     },
     [config, setConfig, closeTrackersPrompt],
   );
@@ -190,18 +191,18 @@ export function App({
       closeFolderPrompt();
       const dir = normalizeDownloadDir(raw);
       if (!config || !dir || dir === config.downloadDir) {
-        if (config && dir && dir === config.downloadDir) setNotice("Download folder unchanged.");
+        if (config && dir && dir === config.downloadDir) setNotice("Папка загрузок без изменений.");
         return;
       }
       void (async () => {
         try {
           await fs.mkdir(dir, { recursive: true });
         } catch {
-          setNotice(`Couldn't use folder: ${truncate(dir, 48)}`);
+          setNotice(`Не удалось использовать папку: ${truncate(dir, 48)}`);
           return;
         }
         setConfig({ ...config, downloadDir: dir });
-        setNotice(`Download folder: ${truncate(dir, 48)}`);
+        setNotice(`Папка загрузок: ${truncate(dir, 48)}`);
       })();
     },
     [config, setConfig, closeFolderPrompt],
@@ -218,7 +219,7 @@ export function App({
       if (!config || !queue) return;
       void fs.mkdir(config.downloadDir, { recursive: true }).catch(() => {});
       queue.add(input, config.downloadDir);
-      setNotice(`Added: ${truncate(cleanText(input.name), 40)}`);
+      setNotice(`Добавлено: ${truncate(cleanText(input.name), 40)}`);
       setSection("downloads");
       setRegion("content");
     },
@@ -229,10 +230,10 @@ export function App({
     void (async () => {
       const ok = await writeClipboard(input.magnet);
       if (ok) {
-        setNotice(`Copied magnet: ${truncate(cleanText(input.magnet), 60)}`);
+        setNotice(`Магнет скопирован: ${truncate(cleanText(input.magnet), 60)}`);
         return;
       }
-      setNotice(`Couldn't copy magnet for ${truncate(cleanText(input.name), 32)}.`);
+      setNotice(`Не удалось скопировать магнет для ${truncate(cleanText(input.name), 32)}.`);
     })();
   }, []);
 
@@ -262,7 +263,7 @@ export function App({
   const pasteFromClipboard = useCallback(async () => {
     const text = (await readClipboard()).trim();
     if (!text) {
-      setNotice("Clipboard is empty.");
+      setNotice("Буфер обмена пуст.");
       return;
     }
     const found = text.match(/magnet:\?xt=urn:btih:[^\s"'<>]+/i)?.[0];
@@ -272,7 +273,7 @@ export function App({
       setView("browser");
       return;
     }
-    setNotice("No magnet link on the clipboard.");
+    setNotice("Магнет-ссылка не найдена в буфере обмена.");
   }, [startDownload]);
 
   useEffect(() => {
@@ -285,7 +286,7 @@ export function App({
   const showTopRule = !compact;
   const showFooter = rows >= 12;
   const chrome =
-    3 +
+    LOGO_LINES.length +
     (showTopRule ? 1 : 0) +
     (compact ? 0 : 1) +
     (showFooter ? 1 : 0);
@@ -413,7 +414,7 @@ export function App({
   if (!store) {
     return (
       <Box height={rows} justifyContent="center" alignItems="center">
-        <Spinner label="Starting torlink" />
+        <Spinner label="Запуск torio" />
       </Box>
     );
   }
@@ -430,9 +431,16 @@ export function App({
   return (
     <StoreContext.Provider value={store}>
       <TabTitle />
-      <Box flexDirection="column" paddingX={1}>
+      <Box flexDirection="column" height={rows - 1} paddingX={1}>
+        <Box marginTop={1} />
         <Box justifyContent="space-between">
-          <Logo />
+          {cols >= LOGO_WIDTH + 2 ? (
+            <Logo />
+          ) : (
+            <Text bold color={COLOR.accent}>
+              torio
+            </Text>
+          )}
           {notice ? <Text color={COLOR.good}>{notice}</Text> : null}
         </Box>
         {showTopRule ? <Rule width={ruleWidth} /> : null}

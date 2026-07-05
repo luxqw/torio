@@ -7,7 +7,7 @@ export function TabTitle() {
   const active = queue.activeCount;
 
   useEffect(() => {
-    const title = active > 0 ? `↓${active} · torlink` : "torlink";
+    const title = active > 0 ? `↓${active} · torio` : "torio";
     process.stdout.write(`\x1b]0;${title}\x07`);
     if (process.platform === "win32") process.title = title;
   }, [active]);

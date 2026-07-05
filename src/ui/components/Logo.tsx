@@ -4,9 +4,9 @@ import { COLOR, lerpHex } from "../theme";
 
 const HIGHLIGHT = "#ffffff";
 const TOP = COLOR.bright;
-const BASE = "#7c5cd6";
-const SHADE = "#4c3a8a";
-const SPROUT_COLOR = "#5ae87a";
+const BASE = "#5a6378";
+const SHADE = "#3a4048";
+const SPROUT_COLOR = "#aad94c";
 
 function getSheen(t: number): string {
   if (t < 0.15) return lerpHex(HIGHLIGHT, TOP, t / 0.15);

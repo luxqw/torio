@@ -1,10 +1,10 @@
 {
-  "name": "torlnk",
+  "name": "torio",
   "version": "1.2.0",
   "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
   "type": "module",
   "bin": {
-    "torlnk": "./dist/cli.cjs"
+    "torio": "./dist/cli.cjs"
   },
   "files": [
     "dist",
@@ -42,15 +42,15 @@
     "zero-setup",
     "fitgirl"
   ],
-  "author": "bairon",
+  "author": "y-tretyakov",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/baairon/torlink.git"
+    "url": "git+https://github.com/y-tretyakov/torio.git"
   },
-  "homepage": "https://github.com/baairon/torlink#readme",
+  "homepage": "https://github.com/y-tretyakov/torio#readme",
   "bugs": {
-    "url": "https://github.com/baairon/torlink/issues"
+    "url": "https://github.com/y-tretyakov/torio/issues"
   },
   "publishConfig": {
     "access": "public"

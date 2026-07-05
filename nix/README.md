@@ -1,12 +1,12 @@
 # Flake install
 Add this repo to your ```flake.nix```. The package is built using the unstable channel. You can overwrite this by setting ```inputs.nixpkgs.follows = "nixpkgs"``` (if your default is 26.05).
 
-**The binary is executed as ```torlnk```.**
+**The binary is executed as ```torio```.**
 
 ```nix
 inputs = {
   ...
-  torlink.url = "github:baairon/torlink";
+  torio.url = "github:baairon/torio";
   ...
 }
 ```
@@ -21,7 +21,7 @@ You can install the package in either home.nix or your configuration.nix dependi
 {
   home.packages = with pkgs; [
     ...
-    inputs.torlink.packages.${pkgs.system}.default
+    inputs.torio.packages.${pkgs.system}.default
     ...
   ];
 }
@@ -35,7 +35,7 @@ You can install the package in either home.nix or your configuration.nix dependi
 {
   environment.systemPackages = with pkgs; [
     ...
-    inputs.torlink.packages.${pkgs.system}.default
+    inputs.torio.packages.${pkgs.system}.default
     ...
   ];
 }

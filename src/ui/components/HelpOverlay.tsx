@@ -31,7 +31,7 @@ export function HelpOverlay() {
       paddingY={1}
     >
       <Text bold color={COLOR.accent}>
-        Keyboard
+        Клавиши
       </Text>
       <Box marginTop={1} flexDirection={columns ? "row" : "column"}>
         {HELP_GROUPS.map((group, gi) => (
@@ -55,8 +55,8 @@ export function HelpOverlay() {
         ))}
       </Box>
       <Box marginTop={1} flexDirection="column">
-        <Text dimColor>Your downloaded files always stay on disk.</Text>
-        <Text dimColor>Press ? or esc to close</Text>
+        <Text dimColor>Скачанные файлы всегда остаются на диске.</Text>
+        <Text dimColor>Нажмите ? или esc для закрытия</Text>
       </Box>
     </Box>
   );

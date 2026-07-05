@@ -1,30 +1,46 @@
 import type { SourceId } from "../sources/types";
 
 export const COLOR = {
-  accent: "#a78bfa",
-  text: "#e9e4f5",
-  alt: "#b9a7e6",
-  good: "#86d6a2",
-  warn: "#f0c560",
-  bad: "#ee7d92",
-  bright: "#d8b4fe",
+  accent: "#ff8f40",
+  text: "#bfbdb6",
+  alt: "#5a6378",
+  good: "#aad94c",
+  warn: "#e6b450",
+  bad: "#d95757",
+  bright: "#d2a6ff",
 } as const;
 
 export const ICON = {
-  done: "✓",
-  error: "✗",
-  pending: "·",
-  pointer: "❯",
+  done: "✔",
+  error: "✘",
+  pending: "◌",
+  pointer: "▶",
   dot: "·",
   warn: "⚠",
   bar: "▌",
   down: "↓",
   up: "↑",
-  peer: "•",
+  peer: "●",
   pause: "⏸",
+  all: "◎",
+  games: "✦",
+  movies: "◆",
+  tv: "▸",
+  anime: "☆",
+  library: "☰",
+  copy: "⑂",
+  sort: "↕",
+  search: "⌕",
+  retry: "↻",
+  clear: "✕",
+  delete: "✕",
+  back: "←",
+  open: "↵",
+  pauseplay: "⏸",
+  stop: "■",
 } as const;
 
-export const RULE = "#6b6577";
+export const RULE = "#5a6673";
 
 export const GUTTER = 2;
 
@@ -33,11 +49,19 @@ export const SOURCE_STYLE: Record<SourceId, { tag: string; color: string }> = {
   yts: { tag: "YTS", color: COLOR.good },
   eztv: { tag: "EZTV", color: COLOR.warn },
   nyaa: { tag: "NYAA", color: COLOR.bright },
-  subsplease: { tag: "SUB", color: "#b9a7e6" },
-  "tpb-movies": { tag: "TPB", color: "#5fd0c5" },
-  "tpb-tv": { tag: "TPB", color: "#5fd0c5" },
-  "x1337-movies": { tag: "1337", color: "#f6a55c" },
-  "x1337-tv": { tag: "1337", color: "#f6a55c" },
+  subsplease: { tag: "SUB", color: "#5a6378" },
+  "tpb-movies": { tag: "TPB", color: "#95e6cb" },
+  "tpb-tv": { tag: "TPB", color: "#95e6cb" },
+  "x1337-movies": { tag: "1337", color: "#f29668" },
+  "x1337-tv": { tag: "1337", color: "#f29668" },
+  "nnm-movies": { tag: "NNM", color: "#f26d78" },
+  "nnm-tv": { tag: "NNM", color: "#f26d78" },
+  "nnm-games": { tag: "NNM", color: "#f26d78" },
+  torentino: { tag: "TRN", color: "#f26d78" },
+  "rutor-movies": { tag: "RTR", color: "#95e6cb" },
+  "rutor-tv": { tag: "RTR", color: "#95e6cb" },
+  "rutor-games": { tag: "RTR", color: "#95e6cb" },
+  "rutor-anime": { tag: "RTR", color: "#95e6cb" },
 };
 
 // Tolerant lookup: a source id may be absent (a pasted magnet / bare infohash) or

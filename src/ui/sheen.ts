@@ -7,7 +7,7 @@
 // peak glides between cells (intensity-interpolated) instead of stepping a whole
 // cell at a time, while the cells themselves stay discrete (pixelated).
 
-export const SHEEN_PEAK = "#f4efff";
+export const SHEEN_PEAK = "#ffffff";
 export const SHEEN_RADIUS = 4.5; // bell half-width, in cells
 export const SHEEN_GAP = 8; // dark cells between sweeps
 export const SHEEN_TICK_MS = 40; // frame interval (~25fps)

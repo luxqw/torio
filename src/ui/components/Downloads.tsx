@@ -19,7 +19,7 @@ import type { HistoryItem } from "../../download/history";
 const ROWS_PER_ACTIVE = 2;
 const MARK = 2;
 
-const PAUSED = "#7c7785";
+const PAUSED = "#5a6378";
 
 function statusColor(status: QueueItem["status"]): string {
   if (status === "failed") return COLOR.bad;
@@ -39,8 +39,8 @@ function rightStats(it: QueueItem): string {
     const eta = it.eta ? `  ${formatEtaShort(it.eta)}` : "";
     return `${it.progress}%  ${speed}  ${ICON.peer}${it.peers}${eta}`;
   }
-  if (it.status === "paused") return `paused  ${it.progress}%`;
-  return truncate(it.error || "failed", 28);
+  if (it.status === "paused") return `пауза  ${it.progress}%`;
+  return truncate(it.error || "ошибка", 28);
 }
 
 export function Downloads() {
@@ -100,8 +100,8 @@ export function Downloads() {
 
   if (total === 0) {
     return (
-      <Panel title="downloads" width={contentWidth} focused={focused} height={panelH}>
-        <Text dimColor>No downloads yet. Find something and press d to grab it.</Text>
+      <Panel title="загрузки" width={contentWidth} focused={focused} height={panelH}>
+        <Text dimColor>Загрузок пока нет. Найдите что-нибудь и нажмите d для загрузки.</Text>
       </Panel>
     );
   }
@@ -142,7 +142,7 @@ export function Downloads() {
   const count = hasActive ? `(${active.length})` : undefined;
 
   return (
-    <Panel title="downloads" width={contentWidth} focused={focused} count={count} height={panelH}>
+    <Panel title="загрузки" width={contentWidth} focused={focused} count={count} height={panelH}>
       {activeVisible.map((it, i) => {
         const here = activeStart + i === clamped && focused && inActive;
         const sc = statusColor(it.status);
@@ -195,7 +195,7 @@ export function Downloads() {
 
       {hasRecent ? (
         <Box marginTop={gapRows ? 1 : 0}>
-          <Text dimColor>{`Recently downloaded${recent.length > 1 ? `  (${recent.length})` : ""}`}</Text>
+          <Text dimColor>{`Недавно скачано${recent.length > 1 ? `  (${recent.length})` : ""}`}</Text>
         </Box>
       ) : null}
 

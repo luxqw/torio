@@ -1,7 +1,10 @@
 import { eztv } from "./eztv";
 import { fitgirl } from "./fitgirl";
+import { nnmMovies, nnmTv, nnmGames } from "./nnmclub";
 import { nyaa } from "./nyaa";
+import { rutorMovies, rutorTv, rutorGames, rutorAnime } from "./rutor";
 import { subsplease } from "./subsplease";
+import { torentino } from "./torentino";
 import { tpbMovies, tpbTv } from "./piratebay";
 import { x1337Movies, x1337Tv } from "./x1337";
 import { yts } from "./yts";
@@ -17,6 +20,14 @@ export const SOURCES: readonly Source[] = [
   x1337Tv,
   nyaa,
   subsplease,
+  nnmMovies,
+  nnmTv,
+  nnmGames,
+  torentino,
+  rutorMovies,
+  rutorTv,
+  rutorGames,
+  rutorAnime,
 ];
 
 export const DEFAULT_SOURCE: Source = SOURCES[0]!;

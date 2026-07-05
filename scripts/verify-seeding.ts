@@ -1,5 +1,5 @@
 /**
- * Proves torlink's seeding actually transfers bytes (not just a UI label), and
+ * Proves torio's seeding actually transfers bytes (not just a UI label), and
  * that pause and resume really stop/restart it.
  *
  * Offline-deterministic: the leechers run with dht/tracker/lsd OFF and are
@@ -86,7 +86,7 @@ async function waitSeederReady(
 }
 
 async function main(): Promise<void> {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "torlink-seedcheck-"));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "torio-seedcheck-"));
   const seedDir = path.join(root, "seed");
   await fs.mkdir(seedDir, { recursive: true });
   const filePath = path.join(seedDir, "payload.bin");
@@ -94,7 +94,7 @@ async function main(): Promise<void> {
   log(`payload: ${filePath} (${FILE_BYTES} bytes)`);
 
   // Mint the .torrent metadata for the on-disk file via a throwaway client, then
-  // drop it. This is what torlink now captures at download time and seeds from.
+  // drop it. This is what torio now captures at download time and seeds from.
   const minter = new WebTorrent({ dht: false, tracker: false, lsd: false });
   const { meta, infoHash } = await new Promise<{ meta: Uint8Array; infoHash: string }>(
     (resolve) => {

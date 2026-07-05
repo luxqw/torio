@@ -62,18 +62,18 @@ describe("formatCount", () => {
 describe("formatRelative", () => {
   it("describes recent times", () => {
     const now = Date.now() / 1000;
-    expect(formatRelative(now - 30)).toBe("now");
-    expect(formatRelative(now - 125)).toBe("2m ago");
+    expect(formatRelative(now - 30)).toBe("только что");
+    expect(formatRelative(now - 125)).toBe("2 мин. назад");
     expect(formatRelative(0)).toBe("");
   });
 });
 
 describe("formatEtaShort", () => {
   it("formats remaining time compactly", () => {
-    expect(formatEtaShort(45)).toBe("45s");
-    expect(formatEtaShort(125)).toBe("2m 5s");
-    expect(formatEtaShort(3725)).toBe("1hr 2m");
-    expect(formatEtaShort(90061)).toBe("1d 1hr 1m");
+    expect(formatEtaShort(45)).toBe("45 сек");
+    expect(formatEtaShort(125)).toBe("2 мин 5 сек");
+    expect(formatEtaShort(3725)).toBe("1 ч 2 мин");
+    expect(formatEtaShort(90061)).toBe("1 д 1 ч 1 мин");
     expect(formatEtaShort(undefined)).toBe("");
   });
 });
@@ -81,7 +81,7 @@ describe("formatEtaShort", () => {
 describe("cleanText", () => {
   it("strips junk glyphs and collapses whitespace", () => {
     expect(cleanText("Foo 🎬 Bar")).toBe("Foo Bar");
-    expect(cleanText("🎬🎬")).toBe("Untitled");
+    expect(cleanText("🎬🎬")).toBe("Без названия");
   });
 });
 

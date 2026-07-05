@@ -12,9 +12,9 @@ export interface SourceState {
 }
 
 function errorCode(e: unknown, timedOut: boolean): string {
-  if (timedOut) return "timed out";
+  if (timedOut) return "тайм-аут";
   if (e instanceof HttpError && e.status > 0) return `HTTP ${e.status}`;
-  return "no response";
+  return "нет ответа";
 }
 
 export interface ConcurrentSearchState {
@@ -42,7 +42,7 @@ function dedupe(list: TorrentResult[]): TorrentResult[] {
   return [...byHash.values()];
 }
 
-// torlink's default ordering: healthiest first. The results view can re-sort
+// torio's default ordering: healthiest first. The results view can re-sort
 // on demand (the `s` key), and its "none"/default state preserves this order.
 function defaultOrder(list: TorrentResult[]): TorrentResult[] {
   return list.sort((a, b) => {
@@ -96,7 +96,7 @@ export function useConcurrentSearch(query: string): ConcurrentSearchState {
           const timedOut = sc.signal.aborted;
           per[source.id] = {
             loading: false,
-            error: timedOut ? "timed out" : e instanceof Error ? e.message : String(e),
+            error: timedOut ? "тайм-аут" : e instanceof Error ? e.message : String(e),
             code: errorCode(e, timedOut),
             count: 0,
           };

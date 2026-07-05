@@ -39,7 +39,7 @@ export function sortArrow(dir: SortDir): string {
 }
 
 export function sortLabel(sort: Sort): string {
-  if (sort === "none") return "default";
+  if (sort === "none") return "по умолч.";
   return `${sort.field} ${sortArrow(sort.dir)}`;
 }
 

@@ -18,7 +18,7 @@ export function TrackersPrompt({ width, value, onSubmit, onCancel }: TrackersPro
 
   return (
     <Box flexDirection="column" width={width}>
-      <Panel title="extra trackers" width={width} focused height={2}>
+      <Panel title="доп. трекеры" width={width} focused height={2}>
         <Box>
           <Text color={COLOR.accent}>{`${ICON.pointer} `}</Text>
           <Box flexGrow={1} minWidth={0}>
@@ -33,13 +33,13 @@ export function TrackersPrompt({ width, value, onSubmit, onCancel }: TrackersPro
       <Box marginTop={1} flexDirection="column">
         <Box>
           <Text color={COLOR.alt}>↵</Text>
-          <Text dimColor> save</Text>
+          <Text dimColor> сохранить</Text>
           <Text dimColor>{`     ${ICON.dot}     `}</Text>
           <Text color={COLOR.alt}>esc</Text>
-          <Text dimColor> cancel</Text>
+          <Text dimColor> отмена</Text>
         </Box>
         <Text dimColor>
-          Separate with commas or spaces. Empty saves an empty list. Applies to new adds.
+          Разделяйте запятыми или пробелами. Пусто = пустой список. Для новых загрузок.
         </Text>
       </Box>
     </Box>

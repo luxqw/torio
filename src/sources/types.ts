@@ -7,7 +7,15 @@ export type SourceId =
   | "tpb-movies"
   | "tpb-tv"
   | "x1337-movies"
-  | "x1337-tv";
+  | "x1337-tv"
+  | "nnm-movies"
+  | "nnm-tv"
+  | "nnm-games"
+  | "torentino"
+  | "rutor-movies"
+  | "rutor-tv"
+  | "rutor-games"
+  | "rutor-anime";
 
 export type SourceGroup = "Games" | "Movies" | "TV" | "Anime";
 

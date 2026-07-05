@@ -17,13 +17,13 @@ export function FolderPrompt({ width, value, onSubmit, onCancel }: FolderPromptP
 
   return (
     <Box flexDirection="column" width={width}>
-      <Panel title="download folder" width={width} focused height={2}>
+      <Panel title="папка загрузок" width={width} focused height={2}>
         <Box>
           <Text color={COLOR.accent}>{`${ICON.pointer} `}</Text>
           <Box flexGrow={1} minWidth={0}>
             <TextField
               defaultValue={value}
-              placeholder="~/Downloads/torlink"
+              placeholder="~/Downloads/torio"
               onSubmit={onSubmit}
             />
           </Box>
@@ -31,10 +31,10 @@ export function FolderPrompt({ width, value, onSubmit, onCancel }: FolderPromptP
       </Panel>
       <Box marginTop={1}>
         <Text color={COLOR.alt}>↵</Text>
-        <Text dimColor> save</Text>
+        <Text dimColor> сохранить</Text>
         <Text dimColor>{`     ${ICON.dot}     `}</Text>
         <Text color={COLOR.alt}>esc</Text>
-        <Text dimColor> cancel</Text>
+        <Text dimColor> отмена</Text>
       </Box>
     </Box>
   );

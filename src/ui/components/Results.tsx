@@ -15,7 +15,7 @@ import type { Source, TorrentResult } from "../../sources/types";
 
 type Mode = "list" | "search" | "detail";
 
-const PLACEHOLDER = "Search or paste a magnet link…";
+const PLACEHOLDER = "Поиск или вставьте магнет-ссылку…";
 
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -37,10 +37,10 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
         <Text color={r.seeders > 0 ? COLOR.good : undefined} bold={r.seeders > 0}>
           {r.seeders}
         </Text>
-        <Text dimColor>{` seeders ${ICON.dot} ${r.leechers} leechers`}</Text>
+        <Text dimColor>{` сидеров ${ICON.dot} ${r.leechers} качающих`}</Text>
       </Text>
     ) : (
-      <Text dimColor>unknown</Text>
+      <Text dimColor>неизв.</Text>
     );
   return (
     <Box flexDirection="column">
@@ -59,22 +59,22 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
       <Rule width={width} />
       <Box marginTop={1} flexDirection="column">
         <DetailRow
-          label="Size"
+          label="Размер"
           value={
             r.sizeBytes > 0 ? (
               <Text color={COLOR.text}>{formatBytes(r.sizeBytes)}</Text>
             ) : (
-              <Text dimColor>unknown</Text>
+      <Text dimColor>неизв.</Text>
             )
           }
         />
-        <DetailRow label="Health" value={health} />
+        <DetailRow label="Здоровье" value={health} />
         {r.numFiles ? (
-          <DetailRow label="Files" value={<Text dimColor>{String(r.numFiles)}</Text>} />
+          <DetailRow label="Файлы" value={<Text dimColor>{String(r.numFiles)}</Text>} />
         ) : null}
-        {date ? <DetailRow label="Added" value={<Text dimColor>{date}</Text>} /> : null}
+        {date ? <DetailRow label="Добавлено" value={<Text dimColor>{date}</Text>} /> : null}
         <DetailRow
-          label="Hash"
+          label="Хеш"
           value={
             <Text color={COLOR.alt} dimColor wrap="truncate-end">
               {r.infoHash}
@@ -82,7 +82,7 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
           }
         />
         <DetailRow
-          label="Magnet"
+          label="Магнет"
           value={
             <Text color={COLOR.alt} dimColor wrap="truncate-end">
               {r.magnet}
@@ -91,18 +91,21 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
         />
       </Box>
       <Box marginTop={1}>
+        <Text>{ICON.down} </Text>
         <Text color={COLOR.accent} bold>
           d
         </Text>
-        <Text color={COLOR.text}> Download</Text>
+        <Text color={COLOR.text}> Скачать</Text>
         <Text dimColor>{`     ${ICON.dot}     `}</Text>
+        <Text>{ICON.copy} </Text>
         <Text color={COLOR.accent} bold>
           y
         </Text>
-        <Text color={COLOR.text}> Copy magnet</Text>
+        <Text color={COLOR.text}> Коп. магнет</Text>
         <Text dimColor>{`     ${ICON.dot}     `}</Text>
+        <Text>{ICON.back} </Text>
         <Text color={COLOR.alt}>esc</Text>
-        <Text dimColor> back</Text>
+        <Text dimColor> назад</Text>
       </Box>
     </Box>
   );
@@ -250,14 +253,25 @@ export function Results() {
     return codes.length ? ` (${codes.join(", ")})` : "";
   };
 
-  const sortNote = sort === "none" ? "" : `  ${ICON.dot} sort: ${sortLabel(sort)}`;
+  const rplural = (n: number): string => {
+    if (n === 1) return `${n} результат`;
+    if (n >= 2 && n <= 4) return `${n} результата`;
+    return `${n} результатов`;
+  };
+  const splural = (n: number): string => {
+    if (n === 1) return `${n} источник`;
+    if (n >= 2 && n <= 4) return `${n} источника`;
+    return `${n} источников`;
+  };
+
+  const sortNote = sort === "none" ? "" : `  ${ICON.dot} сортировка: ${sortLabel(sort)}`;
 
   const status = () => {
     if (search.loading) {
       if (results.length > 0)
-        return <Text dimColor>{`searching… ${search.done}/${search.total} sources${sortNote}`}</Text>;
+        return <Text dimColor>{`поиск… ${search.done}/${search.total} источников${sortNote}`}</Text>;
       return (
-        <Spinner label={`${browsing ? "Loading" : "Searching"} ${search.done}/${search.total} sources`} />
+        <Spinner label={`${browsing ? "Загрузка" : "Поиск"} ${search.done}/${search.total} источников`} />
       );
     }
     if (results.length === 0) {
@@ -265,31 +279,31 @@ export function Results() {
         const downAll = SOURCES.filter((s) => search.perSource[s.id]?.error);
         return (
           <Text color={COLOR.warn}>
-            {`Couldn't reach any source. They may be down${outageCodes(downAll)}.`}
+            {`Ни один источник недоступен. Возможно, они не работают${outageCodes(downAll)}.`}
           </Text>
         );
       }
       if (tabErrored && activeCat) {
         const down = tabSources.filter((s) => search.perSource[s.id]?.error);
-        const who = down.length === 1 ? "The source" : `All ${down.length} sources`;
+        const who = down.length === 1 ? "Источник" : `Все ${down.length} источников`;
         return (
           <Text color={COLOR.warn}>
-            {`Couldn't reach ${activeCat.label}. ${who} may be down${outageCodes(down)}.`}
+            {`Не удалось достучаться до ${activeCat.label.toLowerCase()}. ${who} недоступен${outageCodes(down)}.`}
           </Text>
         );
       }
       if (search.results.length > 0 && activeCat?.group)
-        return <Text dimColor>{`No ${activeCat.label.toLowerCase()} results yet. Try another tab or a search.`}</Text>;
+        return <Text dimColor>{`Результатов по ${activeCat.label.toLowerCase()} пока нет. Попробуйте другую вкладку или поиск.`}</Text>;
       return (
         <Text dimColor>
-          {browsing ? "Nothing new right now." : `No results for "${truncate(query, 28)}".`}
+          {browsing ? "Сейчас ничего нового." : `Нет результатов для "${truncate(query, 28)}".`}
         </Text>
       );
     }
-    const note = erroredCount > 0 ? `  (${erroredCount} source${erroredCount === 1 ? "" : "s"} down)` : "";
+    const note = erroredCount > 0 ? `  (${erroredCount} недоступен)` : "";
     const head = browsing
-      ? "newest across all sources"
-      : `${results.length} result${results.length === 1 ? "" : "s"}`;
+      ? "свежее со всех источников"
+      : rplural(results.length);
     return <Text dimColor>{`${head}${note}${sortNote}`}</Text>;
   };
 
@@ -320,7 +334,7 @@ export function Results() {
       />
       <Box marginTop={1}>
         <Panel
-          title={mode === "detail" ? "details" : browsing ? "latest" : "results"}
+          title={mode === "detail" ? "детали" : browsing ? "свежее" : "результаты"}
           width={contentWidth}
           focused={focused && mode !== "search"}
           count={mode === "detail" ? undefined : count}
@@ -339,24 +353,24 @@ export function Results() {
                       <Text bold dimColor>#</Text>
                     </Box>
                     <Box flexGrow={1} minWidth={0} marginLeft={1}>
-                      <Text bold dimColor>Name</Text>
+                      <Text bold dimColor>Название</Text>
                     </Box>
                     {showStats ? (
                       <>
                         <Box width={10} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-                          <Text bold dimColor>{sortMark("size", "Size")}</Text>
+                          <Text bold dimColor>{sortMark("size", "Размер")}</Text>
                         </Box>
                         <Box width={9} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-                          <Text bold dimColor>{sortMark("seeders", "Seed:Lch")}</Text>
+                          <Text bold dimColor>{sortMark("seeders", "Сид:Кач")}</Text>
                         </Box>
                       </>
                     ) : (
                       <Box width={12} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-                        <Text bold dimColor>Added</Text>
+                        <Text bold dimColor>Добавлено</Text>
                       </Box>
                     )}
                     <Box width={4} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-                      <Text bold dimColor>{sortMark("source", "Src")}</Text>
+                      <Text bold dimColor>{sortMark("source", "Ист.")}</Text>
                     </Box>
                   </Box>
                 ) : null}

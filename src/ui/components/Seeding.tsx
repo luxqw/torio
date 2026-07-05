@@ -11,7 +11,7 @@ const MARK = 2;
 const SIZE_W = 10;
 const STATUS_W = 14;
 const SRC_W = 4;
-const PAUSED = "#7c7785";
+const PAUSED = "#5a6378";
 
 function glyph(seed: SeedItem | undefined): { icon: string; color: string } {
   if (!seed) return { icon: ICON.done, color: COLOR.good };
@@ -21,12 +21,12 @@ function glyph(seed: SeedItem | undefined): { icon: string; color: string } {
 }
 
 function statusCell(seed: SeedItem | undefined): { text: string; color?: string; dim: boolean } {
-  if (!seed) return { text: "ready", dim: true };
+  if (!seed) return { text: "готово", dim: true };
   if (seed.status === "seeding") {
     return { text: `${ICON.up}${formatBytesPerSec(seed.uploadSpeed) || "0 B/s"} ${ICON.peer}${seed.peers}`, color: COLOR.good, dim: false };
   }
-  if (seed.status === "paused") return { text: "paused", dim: true };
-  return { text: "file gone", color: COLOR.warn, dim: false };
+  if (seed.status === "paused") return { text: "пауза", dim: true };
+  return { text: "файл удалён", color: COLOR.warn, dim: false };
 }
 
 export function Seeding() {
@@ -55,7 +55,7 @@ export function Seeding() {
         if (!h) return;
         queue.toggleSeeding(h);
         if (queue.getSeed(h.id)?.status === "missing") {
-          setNotice(`${ICON.warn} That file isn't on disk anymore.`);
+          setNotice(`${ICON.warn} Файл больше не на диске.`);
         }
       } else if (input === "c") {
         const h = history[clamped];
@@ -70,8 +70,8 @@ export function Seeding() {
 
   if (total === 0) {
     return (
-      <Panel title="seeding" width={contentWidth} focused={focused} height={panelH}>
-        <Text dimColor>Nothing here yet. Downloads start seeding automatically when they finish, and show up here.</Text>
+      <Panel title="раздачи" width={contentWidth} focused={focused} height={panelH}>
+        <Text dimColor>Пока ничего. Раздачи начинаются автоматически после завершения загрузки.</Text>
       </Panel>
     );
   }
@@ -94,7 +94,7 @@ export function Seeding() {
 
   return (
     <Panel
-      title="seeding"
+      title="раздачи"
       width={contentWidth}
       focused={focused}
       count={seedingCount > 0 ? `(${seedingCount})` : undefined}
@@ -104,10 +104,10 @@ export function Seeding() {
         {seedingCount > 0 ? (
           <Text color={COLOR.good}>
             {ICON.up} {formatBytesPerSec(totalUp) || "0 B/s"}
-            <Text dimColor>{`  ${ICON.dot}  ${totalPeers} peers  ${ICON.dot}  ${formatBytes(totalShared)} shared back`}</Text>
+            <Text dimColor>{`  ${ICON.dot}  ${totalPeers} пиров  ${ICON.dot}  ${formatBytes(totalShared)} роздано`}</Text>
           </Text>
         ) : (
-          <Text dimColor>Downloads seed automatically when they finish. Press p to pause or resume any of them.</Text>
+          <Text dimColor>Раздачи начинаются автоматически. Нажмите p для паузы или возобновления.</Text>
         )}
       </Box>
 
@@ -116,16 +116,16 @@ export function Seeding() {
           <Box width={MARK} flexShrink={0} />
           <Box width={GUTTER} flexShrink={0} />
           <Box flexGrow={1} minWidth={0} marginLeft={1}>
-            <Text bold dimColor>Name</Text>
+            <Text bold dimColor>Название</Text>
           </Box>
           <Box width={SIZE_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-            <Text bold dimColor>Size</Text>
+            <Text bold dimColor>Размер</Text>
           </Box>
           <Box width={STATUS_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-            <Text bold dimColor>Status</Text>
+            <Text bold dimColor>Статус</Text>
           </Box>
           <Box width={SRC_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
-            <Text bold dimColor>Src</Text>
+            <Text bold dimColor>Ист.</Text>
           </Box>
         </Box>
 

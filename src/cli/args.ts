@@ -18,15 +18,15 @@ export function parseCliArgs(argv: string[]): CliCommand {
   return { kind: "invalid", arg: a };
 }
 
-export const HELP_TEXT = `torlink, terminal-native torrent search
+export const HELP_TEXT = `torio — поиск торрентов прямо в терминале
 
-usage
-  torlnk                      open the search TUI
-  torlnk "magnet:?xt=..."     start a download on launch
-  torlnk path/to/file.torrent open a .torrent file on launch
-  torlnk --version            print the version
+использование
+  torio                      открыть TUI поиска
+  torio "magnet:?xt=..."     начать загрузку при запуске
+  torio путь/до/файл.torrent открыть .torrent файл при запуске
+  torio --version            показать версию
 
-once open: type to search every source at once, enter to run, arrows to move,
-d to download, ? for keys
-tip: quote magnet links (they contain & characters)
+после открытия: набирайте для поиска по всем источникам, enter для запуска,
+стрелки для перемещения, d для загрузки, ? для клавиш
+подсказка: заключайте магнет-ссылки в кавычки (они содержат символы &)
 `;

@@ -52,22 +52,22 @@ export function formatCount(n: number): string {
 export function formatRelative(unixSeconds?: number): string {
   if (!unixSeconds || !Number.isFinite(unixSeconds) || unixSeconds <= 0) return "";
   const diff = Date.now() / 1000 - unixSeconds;
-  if (diff < 60) return "now";
+  if (diff < 60) return "только что";
   const m = Math.floor(diff / 60);
-  if (m < 60) return `${m}m ago`;
+  if (m < 60) return `${m} мин. назад`;
   const h = Math.floor(m / 60);
   if (h < 24) {
     const rm = m % 60;
-    return rm > 0 ? `${h}hr ${rm}m ago` : `${h}hr ago`;
+    return rm > 0 ? `${h} ч ${rm} мин. назад` : `${h} ч назад`;
   }
   const d = Math.floor(h / 24);
   if (d < 30) {
     const rh = h % 24;
-    return rh > 0 ? `${d}d ${rh}hr ago` : `${d}d ago`;
+    return rh > 0 ? `${d} д ${rh} ч назад` : `${d} д назад`;
   }
   const mo = Math.floor(d / 30);
-  if (mo < 12) return `${mo}mo ago`;
-  return `${Math.floor(mo / 12)}y ago`;
+  if (mo < 12) return `${mo} мес. назад`;
+  return `${Math.floor(mo / 12)} г. назад`;
 }
 
 export function formatEtaShort(sec?: number): string {
@@ -78,12 +78,12 @@ export function formatEtaShort(sec?: number): string {
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
   if (d > 0)
-    return [`${d}d`, h > 0 ? `${h}hr` : "", m > 0 ? `${m}m` : ""]
+    return [`${d} д`, h > 0 ? `${h} ч` : "", m > 0 ? `${m} мин` : ""]
       .filter(Boolean)
       .join(" ");
-  if (h > 0) return m > 0 ? `${h}hr ${m}m` : `${h}hr`;
-  if (m > 0) return s > 0 ? `${m}m ${s}s` : `${m}m`;
-  return `${s}s`;
+  if (h > 0) return m > 0 ? `${h} ч ${m} мин` : `${h} ч`;
+  if (m > 0) return s > 0 ? `${m} мин ${s} сек` : `${m} мин`;
+  return `${s} сек`;
 }
 
 function isJunkCodePoint(cp: number): boolean {
@@ -104,7 +104,7 @@ export function cleanText(s: string): string {
   for (const ch of s.normalize("NFC")) {
     if (!isJunkCodePoint(ch.codePointAt(0)!)) out += ch;
   }
-  return out.replace(/\s+/g, " ").trim() || "Untitled";
+  return out.replace(/\s+/g, " ").trim() || "Без названия";
 }
 
 export function truncate(s: string, max: number): string {

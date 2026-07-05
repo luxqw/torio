@@ -17,7 +17,7 @@ interface SearchBarProps {
 export function SearchBar({
   width,
   value,
-  placeholder = "Search torrents…",
+  placeholder = "Поиск торрентов…",
   editing,
   onSubmit,
   onChange,
@@ -25,7 +25,7 @@ export function SearchBar({
   onExitLeft,
 }: SearchBarProps) {
   return (
-    <Panel title="search" width={width} focused={editing} height={2}>
+    <Panel title="поиск" width={width} focused={editing} height={2}>
       <Box>
         <Text color={COLOR.accent}>{`${ICON.pointer} `}</Text>
         <Box flexGrow={1} minWidth={0}>

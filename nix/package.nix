@@ -10,7 +10,7 @@
 }:
 
 buildNpmPackage (finalAttrs: {
-  pname = "torlink";
+  pname = "torio";
   version = "1.2.0";
   __structuredAttrs = true;
   strictDeps = true;
@@ -42,8 +42,8 @@ buildNpmPackage (finalAttrs: {
   # add wl-copy and xclip to nix readeable path
   postInstall = ''
     tar -xzf ${finalAttrs.nodeDatachannelPrebuilt} \
-      -C $out/lib/node_modules/torlnk/node_modules/node-datachannel
-      wrapProgram $out/bin/torlnk \
+      -C $out/lib/node_modules/torio/node_modules/node-datachannel
+      wrapProgram $out/bin/torio \
         --prefix PATH : ${
           lib.makeBinPath [
             wl-clipboard
@@ -53,12 +53,12 @@ buildNpmPackage (finalAttrs: {
   '';
 
   meta = {
-    description = "Torlink is a torrent finder that lives in your terminal, with zero setup and nothing to configure.";
+    description = "torio is a torrent finder that lives in your terminal, with zero setup and nothing to configure.";
     homepage = "https://github.com/baairon/torlink";
     changelog = "https://github.com/baairon/torlink/releases/tag/v${finalAttrs.src.tag}";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ ghastrum ];
-    mainProgram = "torlnk";
+    mainProgram = "torio";
     platforms = lib.platforms.linux;
   };
 })

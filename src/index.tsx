@@ -11,12 +11,12 @@ if (cmd.kind === "help") {
 }
 
 if (cmd.kind === "version") {
-  console.log(`torlink v${VERSION}`);
+  console.log(`torio v${VERSION}`);
   process.exit(0);
 }
 
 if (cmd.kind === "invalid") {
-  console.error(`error: unknown argument '${cmd.arg}'\n`);
+    console.error(`ошибка: неизвестный аргумент '${cmd.arg}'\n`);
   console.error(HELP_TEXT);
   process.exit(1);
 }
@@ -24,8 +24,8 @@ if (cmd.kind === "invalid") {
 // Enter the alt-screen and hide the hardware cursor: the TUI draws its own
 // cursor (the search field block, list pointers), so the terminal's should
 // stay hidden. restoreTerminal shows it again on exit.
-process.stdout.write("\x1b[?1049h\x1b[?25l\x1b[22;0t\x1b]0;torlink\x07");
-if (process.platform === "win32") process.title = "torlink";
+process.stdout.write("\x1b[?1049h\x1b[?25l\x1b[22;0t\x1b]0;torio\x07");
+if (process.platform === "win32") process.title = "torio";
 
 let restored = false;
 function restoreTerminal(): void {
