@@ -1,5 +1,5 @@
 {
-  "name": "torio",
+  "name": "torio-cli",
   "version": "1.2.0",
   "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
   "type": "module",
