@@ -61,9 +61,20 @@ async function fetchDetail(
     const html = await res.text();
 
     let sizeBytes = 0;
-    const sizeMatch = html.match(/Место\s+на\s+диске[^<]*<\/b>\s*([^<]+)/i);
-    if (sizeMatch) {
-      sizeBytes = parseSize(sizeMatch[1]!.trim());
+    // Try: "Место на диске</b> value" (Russian)
+    const ru = html.match(/Место\s+на\s+диске[^<]*<\/b>\s*([^<]+)/i);
+    if (ru) {
+      sizeBytes = parseSize(ru[1]!.trim());
+    }
+    // Try: "Размер</b> value" (Russian alternate)
+    if (!sizeBytes) {
+      const alt = html.match(/Размер[^<]*<\/b>\s*([^<]+)/i);
+      if (alt) sizeBytes = parseSize(alt[1]!.trim());
+    }
+    // Try: "Size</b> value" (English)
+    if (!sizeBytes) {
+      const en = html.match(/Size[^:]*<\/b>\s*([^<]+)/i);
+      if (en) sizeBytes = parseSize(en[1]!.trim());
     }
 
     return { sizeBytes };
@@ -91,6 +102,41 @@ async function fetchTorrent(
   }
 }
 
+async function fetchPage(
+  url: string,
+  opts: SearchOptions,
+): Promise<string> {
+  const res = await fetchResilient(url, {
+    headers: { "User-Agent": USER_AGENT },
+    signal: opts.signal,
+    retries: 2,
+  });
+  if (!res.ok) throw new HttpError(res.status, `Torentino returned ${res.status}`);
+  return res.text();
+}
+
+async function enrichEntry(
+  entry: Entry,
+  opts: SearchOptions,
+): Promise<TorrentResult | null> {
+  const [detail, infoHash] = await Promise.all([
+    fetchDetail(entry, opts),
+    fetchTorrent(entry.id, opts),
+  ]);
+  if (!infoHash) return null;
+  const magnet = buildMagnet(infoHash, entry.name);
+  return {
+    infoHash,
+    name: entry.name,
+    sizeBytes: detail?.sizeBytes ?? 0,
+    seeders: 0,
+    leechers: 0,
+    source: "torentino",
+    magnet,
+    added: entry.added || undefined,
+  };
+}
+
 export const torentino: Source = {
   id: "torentino",
   label: "Torentino",
@@ -98,52 +144,34 @@ export const torentino: Source = {
   homepage: BASE,
   search: async (query, opts = {}) => {
     const q = query.trim();
-    if (!q) return [];
 
-    const formData = new URLSearchParams({
-      do: "search",
-      subaction: "search",
-      a: "2",
-      query: q,
-    });
-
-    const res = await fetchResilient(`${BASE}/load`, {
-      method: "POST",
-      headers: {
-        "User-Agent": USER_AGENT,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData.toString(),
-      signal: opts.signal,
-    });
-
-    if (!res.ok) throw new HttpError(res.status, `Torentino returned ${res.status}`);
-    const html = await res.text();
+    let html: string;
+    if (q) {
+      const formData = new URLSearchParams({
+        do: "search",
+        subaction: "search",
+        a: "2",
+        query: q,
+      });
+      const res = await fetchResilient(`${BASE}/load`, {
+        method: "POST",
+        headers: {
+          "User-Agent": USER_AGENT,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
+        signal: opts.signal,
+      });
+      if (!res.ok) throw new HttpError(res.status, `Torentino returned ${res.status}`);
+      html = await res.text();
+    } else {
+      html = await fetchPage(BASE, opts);
+    }
 
     const entries = parseEntries(html).slice(0, MAX_RESULTS);
 
     const results = await Promise.all(
-      entries.map(async (entry): Promise<TorrentResult | null> => {
-        const [detail, infoHash] = await Promise.all([
-          fetchDetail(entry, opts),
-          fetchTorrent(entry.id, opts),
-        ]);
-
-        if (!infoHash) return null;
-
-        const magnet = buildMagnet(infoHash, entry.name);
-
-        return {
-          infoHash,
-          name: entry.name,
-          sizeBytes: detail?.sizeBytes ?? 0,
-          seeders: 0,
-          leechers: 0,
-          source: "torentino",
-          magnet,
-          added: entry.added || undefined,
-        };
-      }),
+      entries.map((entry) => enrichEntry(entry, opts)),
     );
 
     return results.filter((r): r is TorrentResult => r !== null);

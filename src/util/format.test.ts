@@ -21,11 +21,28 @@ describe("formatBytes", () => {
 });
 
 describe("parseSize", () => {
-  it("parses human sizes to bytes", () => {
+  it("parses English human sizes to bytes", () => {
     expect(parseSize("1.4 GiB")).toBe(Math.round(1.4 * 1024 ** 3));
     expect(parseSize("700 MB")).toBe(700_000_000);
     expect(parseSize("350.2 MiB")).toBe(Math.round(350.2 * 1024 ** 2));
     expect(parseSize("nothing here")).toBe(0);
+  });
+
+  it("parses Russian unit abbreviations", () => {
+    expect(parseSize("1.5 ГБ")).toBe(Math.round(1.5 * 1024 ** 3));
+    expect(parseSize("256 МБ")).toBe(256 * 1024 ** 2);
+    expect(parseSize("64 КБ")).toBe(64 * 1024);
+  });
+
+  it("parses comma decimal separators (Russian locale)", () => {
+    expect(parseSize("2,5 ГБ")).toBe(Math.round(2.5 * 1024 ** 3));
+    expect(parseSize("1,2 GiB")).toBe(Math.round(1.2 * 1024 ** 3));
+    expect(parseSize("500,25 МБ")).toBe(Math.round(500.25 * 1024 ** 2));
+  });
+
+  it("parses sizes with B unit", () => {
+    expect(parseSize("12345678 B")).toBe(12_345_678);
+    expect(parseSize("0 B")).toBe(0);
   });
 });
 

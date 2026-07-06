@@ -6,6 +6,7 @@ import type { SearchOptions, Source, SourceId, TorrentResult } from "./types";
 const BASE = "https://nnmclub.to";
 const ENC = "windows-1251";
 const MAX_DETAILS = 8;
+const BROWSE_MAX_ROWS = 40;
 
 async function fetchDecoded(
   url: string,
@@ -58,16 +59,8 @@ function parseRows(html: string): Row[] {
     const name = unescapeEntities(stripHtml(topicLink[2]!));
     if (!name) continue;
 
-    // Size (column 5): raw bytes followed by human-readable
-    const sizeText = stripHtml(cells[4]!);
-    const rawBytes = Number(sizeText.match(/^(\d+)/)?.[1] ?? 0);
-    const sizeBytes =
-      rawBytes > 0
-        ? rawBytes
-        : (() => {
-            const sm = sizeText.match(/([\d.]+\s*[KMGT]I?B)/i);
-            return sm ? parseSize(sm[1]!) : 0;
-          })();
+    // Size (column 5): raw bytes, human-readable (English or Russian units)
+    const sizeBytes = parseNnmSize(stripHtml(cells[4]!));
 
     // Seeders (column 6)
     const seeders = Number(
@@ -89,6 +82,24 @@ function parseRows(html: string): Row[] {
   return out;
 }
 
+// NNM can show sizes as:
+//   - raw bytes:  "12345678"
+//   - English:    "1.45 GiB", "856 MiB"
+//   - Russian:    "1,45 ГБ", "856 МБ"
+function parseNnmSize(text: string): number {
+  const cleaned = text.replace(/,/g, ".").replace(/\s+/g, " ").trim();
+
+  // Raw bytes (plain number, 5+ digits)
+  const raw = cleaned.match(/^(\d{5,})$/);
+  if (raw) return Number(raw[1]);
+
+  // Human-readable with unit (English or Russian)
+  const hr = cleaned.match(/([\d.]+\s*(?:[KMGT]I?B|[КМГТ]Б|[кмгт]б))/i);
+  if (hr) return parseSize(hr[1]!);
+
+  return 0;
+}
+
 async function detailInfo(
   topicId: string,
   opts: SearchOptions,
@@ -103,14 +114,23 @@ async function detailInfo(
   }
 }
 
+function parseBrowseUrl(): string {
+  // Sort by added date (o=2), descending (sd=desc). This gives us the newest
+  // topics across all forums, not just the most recently active ones.
+  // The default page sorts by last post date; explicit sort by topic start
+  // date is better for a "fresh releases" feed.
+  return `${BASE}/forum/tracker.php?f=-1&o=2&sd=desc`;
+}
+
 async function search(
   query: string,
   sourceId: SourceId,
   opts: SearchOptions = {},
 ): Promise<TorrentResult[]> {
   const q = query.trim();
-  let url = `${BASE}/forum/tracker.php?f=-1`;
-  if (q) url += `&nm=${encodeURIComponent(q)}`;
+  const url = q
+    ? `${BASE}/forum/tracker.php?f=-1&nm=${encodeURIComponent(q)}`
+    : parseBrowseUrl();
 
   const html = await fetchDecoded(url, opts);
   const rows = parseRows(html);
@@ -122,7 +142,14 @@ async function search(
       )
     : rows;
 
-  matched.sort((a, b) => b.seeders - a.seeders);
+  if (!q) {
+    // Browse mode: take the freshest items (by added date, descending).
+    // The server sorts by date, but we also enforce it client-side to handle
+    // any server-side sort discrepancies.
+    matched.sort((a, b) => b.added - a.added);
+  } else {
+    matched.sort((a, b) => b.seeders - a.seeders);
+  }
   const top = matched.slice(0, MAX_DETAILS);
 
   const settled = await Promise.all(

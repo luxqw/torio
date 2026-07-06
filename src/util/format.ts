@@ -22,10 +22,29 @@ const SIZE_UNITS: Record<string, number> = {
   TB: 1e12,
 };
 
+// Russian abbreviations (binary interpretation, matching how trackers use them)
+const RU_UNITS: Record<string, string> = {
+  КБ: "KIB",
+  МБ: "MIB",
+  ГБ: "GIB",
+  ТБ: "TIB",
+  кб: "KIB",
+  мб: "MIB",
+  гб: "GIB",
+  тб: "TIB",
+};
+
 export function parseSize(s: string): number {
-  const m = s.match(/([\d.]+)\s*([KMGT]?I?B)/i);
+  const trimmed = s.replace(/,/g, ".").trim();
+  const m = trimmed.match(/([\d.]+)\s*((?:[KMGT]I?)?B|КБ|МБ|ГБ|ТБ|[кмгт]б)/i);
   if (!m) return 0;
-  return Math.round(parseFloat(m[1]!) * (SIZE_UNITS[m[2]!.toUpperCase()] ?? 1));
+  const num = parseFloat(m[1]!);
+  if (!Number.isFinite(num) || num < 0) return 0;
+  const unit = m[2]!.toUpperCase();
+  const mapped = RU_UNITS[unit] ?? unit;
+  const multiplier = SIZE_UNITS[mapped];
+  if (!multiplier) return Math.round(num);
+  return Math.round(num * multiplier);
 }
 
 export function formatBytesPerSec(bytes?: number): string {

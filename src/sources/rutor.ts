@@ -1,5 +1,6 @@
 import { fetchResilient, HttpError, USER_AGENT } from "../util/net";
 import { unescapeEntities } from "./rss";
+import { buildMagnet } from "./magnet";
 import { parseSize } from "../util/format";
 import type { SearchOptions, Source, SourceId, TorrentResult } from "./types";
 
@@ -20,6 +21,29 @@ function parseRutorDate(s: string): number | undefined {
   const year = 2000 + Number(m[3]);
   const secs = Math.floor(Date.UTC(year, month, day) / 1000);
   return Number.isNaN(secs) ? undefined : secs;
+}
+
+// Rutor can show sizes in several formats depending on the page:
+//   English:  1.45 GiB, 856 MiB, 500 KiB
+//   Russian:  1,45 ГБ, 856 МБ
+//   Plain:    12345678 (raw bytes)
+function parseRutorSize(rowHtml: string): number {
+  // Rutor uses &nbsp; between number and unit (e.g. "5.00&nbsp;GB")
+  const cleaned = rowHtml.replace(/&nbsp;/gi, " ");
+
+  // Try raw bytes (bare number in a <td>)
+  const raw = cleaned.match(/<td[^>]*>\s*(\d{5,})\s*<\/td>/i);
+  if (raw) return Number(raw[1]);
+
+  // Try human-readable: English or Russian units in any <td>
+  const hr = cleaned.match(/<td[^>]*>\s*([\d.,]+\s*(?:[KMGT]i?B|[КМГТ]Б|[кмгт]б))\s*<\/td>/i);
+  if (hr) return parseSize(hr[1]!);
+
+  // Fallback: look for align="right" (older Rutor layout)
+  const fallback = cleaned.match(/<td[^>]*align="right"[^>]*>([\d.,]+\s*(?:[KMGT]i?B|B))\s*<\/td>/i);
+  if (fallback) return parseSize(fallback[1]!);
+
+  return 0;
 }
 
 function parseIndex(html: string, source: SourceId): TorrentResult[] {
@@ -46,8 +70,7 @@ function parseIndex(html: string, source: SourceId): TorrentResult[] {
     const seeders = Number(rowHtml.match(/<span class="green">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
     const leechers = Number(rowHtml.match(/<span class="red">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
 
-    const sizeMatch = rowHtml.match(/<td[^>]*align="right"[^>]*>([\d.]+\s*(?:[KMGT]i?B|B))\s*<\/td>/i);
-    const sizeBytes = sizeMatch ? parseSize(sizeMatch[1]!) : 0;
+    const sizeBytes = parseRutorSize(rowHtml);
 
     const dateMatch = rowHtml.match(/<td[^>]*>\s*(\d{1,2}\s+[А-Яа-я]{3}\s+\d{2})\s*<\/td>/);
     const added = dateMatch ? parseRutorDate(dateMatch[1]!) : undefined;
@@ -59,7 +82,7 @@ function parseIndex(html: string, source: SourceId): TorrentResult[] {
       seeders,
       leechers,
       source,
-      magnet,
+      magnet: buildMagnet(infoHash, name),
       added,
     });
   }
@@ -73,9 +96,9 @@ async function search(
   opts: SearchOptions = {},
 ): Promise<TorrentResult[]> {
   const q = query.trim();
-  if (!q) return [];
-
-  const url = `${HOST}/search/0/0/000/0/${encodeURIComponent(q)}`;
+  const url = q
+    ? `${HOST}/search/0/0/000/0/${encodeURIComponent(q)}`
+    : HOST;
 
   const res = await fetchResilient(url, {
     headers: { "User-Agent": USER_AGENT },

@@ -11,6 +11,14 @@ torio — это быстрый и бесшовный способ искать 
   <img src="preview/01_main-page.png" alt="Главный экран torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
+<p align="center">
+  <img src="preview/02_last-update.png" alt="Список последних поступлений — свежие релизы со всех источников" style="max-width: 960px; width: 100%; height: auto;">
+</p>
+
+<p align="center">
+  <em>«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.</em>
+</p>
+
 ## Почему torio
 
 - Поиск сразу по нескольким проверенным источникам.
@@ -20,7 +28,7 @@ torio — это быстрый и бесшовный способ искать 
 - Автоматическое продолжение раздачи после окончания скачивания.
 
 <p align="center">
-  <img src="preview/02_search-results.png" alt="Результаты поиска в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="preview/03_search-results.png" alt="Результаты поиска в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Как использовать
@@ -43,7 +51,7 @@ torio — это быстрый и бесшовный способ искать 
 После запуска вы увидите строку поиска. Можно ввести название фильма, сериала, игры или просто нажать Enter, чтобы открыть подборку. Для навигации используются стрелки, клавиша `d` — для скачивания, а `?` — для справки по горячим клавишам.
 
 <p align="center">
-  <img src="preview/03_seected-result.png" alt="Выбранный результат в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="preview/04_selected-result.png" alt="Выбранный результат в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Что происходит во время загрузки
@@ -53,7 +61,7 @@ torio — это быстрый и бесшовный способ искать 
 Загрузка не мешает поиску: можно продолжать искать новые торренты, пока текущие выполняются в фоне. После завершения торренты продолжают раздаваться, если вы не отключили эту функцию вручную.
 
 <p align="center">
-  <img src="preview/04_download-progress.png" alt="Прогресс загрузки в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="preview/05_download.png" alt="Прогресс загрузки в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Поддерживаемые источники
@@ -70,7 +78,7 @@ torio собирает результаты из нескольких источ
 Если один источник недоступен, torio просто продолжает поиск без него и сообщает об этом.
 
 <p align="center">
-  <img src="preview/05_navigation-map.png" alt="Карта навигации torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="preview/06_key-map.png" alt="Карта навигации и горячие клавиши" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Разработка

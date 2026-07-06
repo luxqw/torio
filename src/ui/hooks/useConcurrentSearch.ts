@@ -4,6 +4,19 @@ import { cachedSearch } from "../../sources/cache";
 import { HttpError } from "../../util/net";
 import type { SourceId, TorrentResult } from "../../sources/types";
 
+// Source priority for "fresh releases" (browse) mode: Russian providers first.
+// Sources not in the map get the lowest priority (Infinity).
+const BROWSE_SOURCE_PRIORITY: Partial<Record<SourceId, number>> = {
+  "nnm-movies": 0,
+  "nnm-tv": 0,
+  "nnm-games": 0,
+  "rutor-movies": 1,
+  "rutor-tv": 1,
+  "rutor-games": 1,
+  "rutor-anime": 1,
+  torentino: 2,
+};
+
 export interface SourceState {
   loading: boolean;
   error: string | null;
@@ -44,7 +57,18 @@ function dedupe(list: TorrentResult[]): TorrentResult[] {
 
 // torio's default ordering: healthiest first. The results view can re-sort
 // on demand (the `s` key), and its "none"/default state preserves this order.
-function defaultOrder(list: TorrentResult[]): TorrentResult[] {
+//
+// In browse mode (empty query, "fresh releases") Russian providers take priority
+// and within each provider group results are sorted by newest first.
+function defaultOrder(list: TorrentResult[], browsing: boolean): TorrentResult[] {
+  if (browsing) {
+    return list.sort((a, b) => {
+      const pa = BROWSE_SOURCE_PRIORITY[a.source] ?? Infinity;
+      const pb = BROWSE_SOURCE_PRIORITY[b.source] ?? Infinity;
+      if (pa !== pb) return pa - pb;
+      return (b.added ?? 0) - (a.added ?? 0);
+    });
+  }
   return list.sort((a, b) => {
     if (b.seeders !== a.seeders) return b.seeders - a.seeders;
     return (b.added ?? 0) - (a.added ?? 0);
@@ -62,6 +86,7 @@ function idleState(): ConcurrentSearchState {
 }
 
 export function useConcurrentSearch(query: string): ConcurrentSearchState {
+  const browsing = query.trim() === "";
   const [state, setState] = useState<ConcurrentSearchState>(idleState);
 
   useEffect(() => {
@@ -107,7 +132,7 @@ export function useConcurrentSearch(query: string): ConcurrentSearchState {
           if (!alive) return;
           done += 1;
           setState({
-            results: defaultOrder(dedupe(collected.slice())),
+            results: defaultOrder(dedupe(collected.slice()), browsing),
             perSource: { ...per },
             loading: done < SOURCES.length,
             done,
@@ -120,7 +145,7 @@ export function useConcurrentSearch(query: string): ConcurrentSearchState {
       alive = false;
       ctrl.abort();
     };
-  }, [query]);
+  }, [query, browsing]);
 
   return state;
 }
