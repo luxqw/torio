@@ -28,7 +28,7 @@ const NAV: NavItem[] = GROUPS.flat();
 const BADGE_W = " (00)".length;
 
 export const RAIL_WIDTH =
-  GUTTER + 2 + Math.max(...NAV.map((n) => n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
+  GUTTER + Math.max(...NAV.map((n) => 3 + n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
 
 export function Sidebar() {
   const { section, setSection, region, setRegion, queue } = useStore();
@@ -62,20 +62,12 @@ export function Sidebar() {
                     </Text>
                   ) : null}
                 </Box>
-                <Box width={2} flexShrink={0}>
-                  <Text
-                    color={selected ? (focused ? COLOR.accent : COLOR.alt) : undefined}
-                    dimColor={!selected}
-                  >
-                    {item.icon}
-                  </Text>
-                </Box>
                 <Text
                   color={selected ? (focused ? COLOR.accent : COLOR.alt) : undefined}
                   dimColor={!selected}
                   bold={selected && focused}
                 >
-                  {item.label}
+                  {`${item.icon} ${item.label}`}
                 </Text>
                 {(() => {
                   const n = item.key === "downloads" ? active : item.key === "seeding" ? seeding : 0;

@@ -37,7 +37,7 @@ function rightStats(it: QueueItem): string {
   if (it.status === "downloading") {
     const speed = formatBytesPerSec(it.speed) || "…";
     const eta = it.eta ? `  ${formatEtaShort(it.eta)}` : "";
-    return `${it.progress}%  ${speed}  ${ICON.peer}${it.peers}${eta}`;
+    return `${it.progress}%  ${speed}  ${ICON.peer} ${it.peers}${eta}`;
   }
   if (it.status === "paused") return `пауза  ${it.progress}%`;
   return truncate(it.error || "ошибка", 28);

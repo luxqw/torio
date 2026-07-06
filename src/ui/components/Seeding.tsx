@@ -23,7 +23,7 @@ function glyph(seed: SeedItem | undefined): { icon: string; color: string } {
 function statusCell(seed: SeedItem | undefined): { text: string; color?: string; dim: boolean } {
   if (!seed) return { text: "готово", dim: true };
   if (seed.status === "seeding") {
-    return { text: `${ICON.up}${formatBytesPerSec(seed.uploadSpeed) || "0 B/s"} ${ICON.peer}${seed.peers}`, color: COLOR.good, dim: false };
+    return { text: `${ICON.up} ${formatBytesPerSec(seed.uploadSpeed) || "0 B/s"} ${ICON.peer} ${seed.peers}`, color: COLOR.good, dim: false };
   }
   if (seed.status === "paused") return { text: "пауза", dim: true };
   return { text: "файл удалён", color: COLOR.warn, dim: false };
