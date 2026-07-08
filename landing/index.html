@@ -6,7 +6,7 @@
     <title>torio — Торрент-клиент и поиск прямо в вашем терминале</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -151,7 +151,7 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Логотип -->
                 <div class="flex items-center gap-3">
-                    <img src="../logo.png" alt="torio logo" class="w-9 h-9 rounded-xl object-contain">
+                    <img src="logo.png" alt="torio logo" class="w-9 h-9 rounded-xl object-contain">
                     <div>
                         <span class="font-mono font-bold text-lg tracking-tight text-gray-900 dark:text-white">torio</span>
                         <span class="text-[10px] block text-brand-neon font-mono font-semibold -mt-1">v1.4.2 [stable]</span>
@@ -310,7 +310,7 @@
                     <div class="relative p-1 bg-black/40 min-h-[250px] sm:min-h-[380px] lg:min-h-[480px] flex items-center justify-center overflow-hidden">
                         <!-- Основной контейнер изображения -->
                         <img id="terminal-screenshot" 
-                             src="../preview/01_main-page.png" 
+                             src="preview/01_main-page.png" 
                              onerror="handleImageError(this)"
                              alt="Интерфейс torio" 
                              class="w-full h-auto max-h-[320px] sm:max-h-[420px] lg:max-h-[580px] object-contain rounded-lg transition-all duration-300">
@@ -595,7 +595,7 @@
                 <!-- Левый блок: Название и описание -->
                 <div class="md:col-span-4 flex flex-col gap-3">
                     <div class="flex items-center gap-2">
-                        <img src="../logo.png" alt="torio logo" class="w-6 h-6 object-contain">
+                        <img src="logo.png" alt="torio logo" class="w-6 h-6 object-contain">
                         <span class="font-mono font-bold text-lg text-white">torio-cli</span>
                         <span class="text-[10px] bg-brand-500/10 text-brand-neon px-2 py-0.5 rounded-full font-mono">MIT License</span>
                     </div>
@@ -835,7 +835,7 @@
                 duration: 0.2,
                 onComplete: () => {
                     // Пытаемся грузить .png как базовый вариант
-                    terminalImg.src = `../preview/${fileName}.png`;
+                    terminalImg.src = `preview/${fileName}.png`;
                     terminalImg.alt = captions[fileName];
                     
                     // Обновляем заголовок и описание

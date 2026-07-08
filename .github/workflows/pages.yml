@@ -1,14 +1,10 @@
-name: Deploy landing page to Pages
+name: Deploy landing page to GitHub Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "web/index.html"
+  workflow_dispatch:
 
 jobs:
   deploy:
-    if: github.repository == 'y-tretyakov/torio'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -19,8 +15,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          cp -r preview landing/
+          cp logo.png landing/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: landing
       - id: deployment
         uses: actions/deploy-pages@v4
