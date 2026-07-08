@@ -100,6 +100,107 @@
         .mobile-menu.active {
             max-height: 300px;
         }
+        /* Лайтбокс на весь экран */
+        .lightbox {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .lightbox img {
+            max-width: 95vw;
+            max-height: 95vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 60px rgba(255,143,64,0.15);
+            transform: scale(0.92);
+            transition: transform 0.35s ease;
+        }
+        .lightbox.active img {
+            transform: scale(1);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .slideshow-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #bfbdb6;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .slideshow-btn:hover {
+            background: rgba(255,143,64,0.15);
+            border-color: rgba(255,143,64,0.35);
+            color: #ff8f40;
+        }
+        .slideshow-btn.active {
+            background: rgba(170,217,76,0.12);
+            border-color: rgba(170,217,76,0.3);
+            color: #aad94c;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #bfbdb6;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            opacity: 0;
+            z-index: 5;
+        }
+        .terminal-frame:hover .fullscreen-btn {
+            opacity: 1;
+        }
+        .fullscreen-btn:hover {
+            background: rgba(255,143,64,0.2);
+            border-color: rgba(255,143,64,0.4);
+            color: #ff8f40;
+        }
         
         /* LIGHT MODE STYLES */
         body {
@@ -260,67 +361,83 @@
     <!-- Секция демонстрации интерфейса (Центральный элемент!) -->
     <section id="interface" class="py-12 bg-gray-50 dark:bg-gray-950/40 border-t border-b border-gray-200 dark:border-gray-900 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-10 scroll-anim opacity-0">
+            <div class="text-center max-w-3xl mx-auto mb-6 scroll-anim opacity-0">
                 <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Интерактивный обзор интерфейса</h2>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Переключайте вкладки ниже, чтобы увидеть реальные экраны работы утилиты в CLI-режиме.</p>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Переключайте вкладки, включите слайдшоу или кликните по скриншоту для полного размера.</p>
             </div>
 
             <div class="max-w-5xl mx-auto">
-                <!-- Панель вкладок (Tabs) -->
-                <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-6" id="terminal-tabs">
-                    <button onclick="switchTerminalTab(0, '01_main-page')" class="active-tab px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-700 transition-all">
-                        📟 Главная
-                    </button>
-                    <button onclick="switchTerminalTab(1, '02_last-update')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        ✨ Свежее
-                    </button>
-                    <button onclick="switchTerminalTab(2, '02.1_top')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        🏆 Топ
-                    </button>
-                    <button onclick="switchTerminalTab(3, '03_search-results')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        🔍 Поиск
-                    </button>
-                    <button onclick="switchTerminalTab(4, '04_selected-result')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        📄 Детали
-                    </button>
-                    <button onclick="switchTerminalTab(5, '05_download')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        📥 Загр.
-                    </button>
-                    <button onclick="switchTerminalTab(6, '06_key-map')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
-                        ⌨️ Справка (?)
+                <!-- Панель вкладок (Tabs) + слайдшоу-контрол -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mb-4">
+                    <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2" id="terminal-tabs">
+                        <button onclick="switchTab(0)" class="active-tab px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-700 transition-all">
+                            📟 Главная
+                        </button>
+                        <button onclick="switchTab(1)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            ✨ Свежее
+                        </button>
+                        <button onclick="switchTab(2)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            🏆 Топ
+                        </button>
+                        <button onclick="switchTab(3)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            🔍 Поиск
+                        </button>
+                        <button onclick="switchTab(4)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            📄 Детали
+                        </button>
+                        <button onclick="switchTab(5)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            📥 Загр.
+                        </button>
+                        <button onclick="switchTab(6)" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                            ⌨️ Справка (?)
+                        </button>
+                    </div>
+                    <button id="slideshow-toggle" class="slideshow-btn" onclick="toggleSlideshow()" title="Авто-пролистывание">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Слайдшоу
                     </button>
                 </div>
 
                 <!-- Визуальный терминальный фрейм -->
-                <div class="w-full rounded-2xl bg-[#1a1a1a] border border-ayuAlt/30 shadow-2xl overflow-hidden glow-accent relative">
+                <div class="terminal-frame w-full rounded-2xl bg-[#1a1a1a] border border-ayuAlt/30 shadow-2xl overflow-hidden glow-accent relative">
                     <!-- Хедер десктопного окна (CachyOS/Ghostty style) -->
-                    <div class="bg-[#252525] px-4 py-3 flex items-center justify-between border-b border-ayuAlt/20 select-none">
+                    <div class="bg-[#252525] px-4 py-2.5 flex items-center justify-between border-b border-ayuAlt/20 select-none">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-brand-bad/80 inline-block"></span>
                             <span class="w-3 h-3 rounded-full bg-brand-warn/80 inline-block"></span>
                             <span class="w-3 h-3 rounded-full bg-brand-good/80 inline-block"></span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-600 dark:text-gray-400 font-mono" id="terminal-title">torio ~ index</span>
+                            <span class="text-xs text-gray-600 dark:text-gray-400 font-mono" id="terminal-title">torio ~ 01_main-page</span>
                         </div>
-                        <span class="text-[10px] text-gray-600 dark:text-gray-500 font-mono">60 FPS</span>
+                        <div class="flex items-center gap-2">
+                            <span id="slide-counter" class="text-[10px] text-gray-600 dark:text-gray-500 font-mono">1/7</span>
+                        </div>
                     </div>
 
                     <!-- Окно скриншота с анимацией перехода -->
-                    <div class="relative p-1 bg-black/40 min-h-[250px] sm:min-h-[380px] lg:min-h-[480px] flex items-center justify-center overflow-hidden">
-                        <!-- Основной контейнер изображения -->
+                    <div class="relative p-1 bg-black/40 min-h-[250px] sm:min-h-[380px] lg:min-h-[480px] flex items-center justify-center overflow-hidden cursor-zoom-in" onclick="openLightbox()">
                         <img id="terminal-screenshot" 
-                             src="preview/01_main-page.png" 
+                             src="preview/01_main-page.webp" 
                              onerror="handleImageError(this)"
                              alt="Интерфейс torio" 
                              class="w-full h-auto max-h-[320px] sm:max-h-[420px] lg:max-h-[580px] object-contain rounded-lg transition-all duration-300">
                     </div>
+                    <button class="fullscreen-btn" onclick="openLightbox()" title="Открыть в полном размере" aria-label="Fullscreen">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    </button>
                 </div>
 
                 <!-- Подпись текущего скриншота -->
                 <p id="screenshot-caption" class="text-center mt-4 text-xs font-mono text-gray-600 dark:text-gray-500">
                     «Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.
                 </p>
+            </div>
+
+            <!-- Лайтбокс (полноэкранный просмотр) -->
+            <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+                <button class="lightbox-close" onclick="closeLightboxDirect()">✕</button>
+                <img id="lightbox-img" src="" alt="Полноэкранный скриншот">
             </div>
         </div>
     </section>
@@ -800,26 +917,38 @@
             }, 3000);
         }
 
-        // === Управление Табами Скриншотов в Терминале ===
+        // === Список слайдов ===
+        const slides = [
+            { file: '01_main-page',     label: '📟 Главная',       caption: '«Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.' },
+            { file: '02_last-update',   label: '✨ Свежее',        caption: '«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.' },
+            { file: '02.1_top',         label: '🏆 Топ',          caption: '«Топ торрентов» (Ctrl+T) — ежедневная подборка лучших релизов напрямую с rutor.is/top, разбитая по удобным категориям.' },
+            { file: '03_search-results',label: '🔍 Поиск',        caption: '«Результаты поиска» — отображение доступных сидов, пиров, источников и размера файлов на одной панели.' },
+            { file: '04_selected-result',label: '📄 Детали',      caption: '«Выбранный результат» — подробный разбор магнет-хеша, количества раздающих и прямая загрузка кнопкой d.' },
+            { file: '05_download',      label: '📥 Загр.',        caption: '«Прогресс загрузки» — наглядный мониторинг скорости закачки, времени окончания и очереди задач в фоне.' },
+            { file: '06_key-map',       label: '⌨️ Справка (?)',  caption: '«Карта навигации» — встроенная интерактивная справка по горячим клавишам, вызываемая кнопкой ?.' }
+        ];
+        let currentSlide = 0;
+        let slideshowInterval = null;
+        const SLIDESHOW_DELAY = 4000;
+
         const terminalImg = document.getElementById('terminal-screenshot');
         const terminalTitle = document.getElementById('terminal-title');
         const screenshotCaption = document.getElementById('screenshot-caption');
+        const slideCounter = document.getElementById('slide-counter');
         const tabButtons = document.querySelectorAll('#terminal-tabs button');
+        const slideshowBtn = document.getElementById('slideshow-toggle');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
 
-        const captions = {
-            '01_main-page': '«Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.',
-            '02_last-update': '«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.',
-            '02.1_top': '«Топ торрентов» (Ctrl+T) — ежедневная подборка лучших релизов напрямую с rutor.is/top, разбитая по удобным категориям.',
-            '03_search-results': '«Результаты поиска» — отображение доступных сидов, пиров, источников и размера файлов на одной панели.',
-            '04_selected-result': '«Выбранный результат» — подробный разбор магнет-хеша, количества раздающих и прямая загрузка кнопкой d.',
-            '05_download': '«Прогресс загрузки» — наглядный мониторинг скорости закачки, времени окончания и очереди задач в фоне.',
-            '06_key-map': '«Карта навигации» — встроенная интерактивная справка по горячим клавишам, вызываемая кнопкой ?.'
-        };
+        function showSlide(index) {
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+            currentSlide = index;
+            const slide = slides[index];
 
-        function switchTerminalTab(tabIndex, fileName) {
-            // Переключаем активный класс на табах
+            // Табы
             tabButtons.forEach((btn, idx) => {
-                if (idx === tabIndex) {
+                if (idx === index) {
                     btn.classList.add('active-tab');
                     btn.classList.remove('text-gray-400');
                 } else {
@@ -828,19 +957,16 @@
                 }
             });
 
-            // Мягко гасим и меняем изображение через GSAP
             gsap.to(terminalImg, {
                 opacity: 0.1,
                 scale: 0.98,
                 duration: 0.2,
                 onComplete: () => {
-                    // Пытаемся грузить .png как базовый вариант
-                    terminalImg.src = `preview/${fileName}.png`;
-                    terminalImg.alt = captions[fileName];
-                    
-                    // Обновляем заголовок и описание
-                    terminalTitle.textContent = `torio ~ ${fileName}`;
-                    screenshotCaption.textContent = captions[fileName];
+                    terminalImg.src = `preview/${slide.file}.webp`;
+                    terminalImg.alt = slide.caption;
+                    terminalTitle.textContent = `torio ~ ${slide.file}`;
+                    screenshotCaption.textContent = slide.caption;
+                    slideCounter.textContent = `${index + 1}/${slides.length}`;
 
                     gsap.to(terminalImg, {
                         opacity: 1,
@@ -852,14 +978,68 @@
             });
         }
 
-        // Логика автоматического фоллбека с PNG на JPG, если файлы имеют расширение JPG в деплое
-        function handleImageError(img) {
-            if (img.src.endsWith('.png')) {
-                // Если произошла ошибка загрузки PNG - пробуем загрузить одноименный JPG
-                const newSrc = img.src.replace('.png', '.jpg');
-                img.src = newSrc;
+        function switchTab(index) {
+            if (slideshowInterval) toggleSlideshow();
+            showSlide(index);
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        function toggleSlideshow() {
+            if (slideshowInterval) {
+                clearInterval(slideshowInterval);
+                slideshowInterval = null;
+                slideshowBtn.classList.remove('active');
+                slideshowBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Слайдшоу`;
             } else {
-                // Если и JPG упал, показываем аккуратный плейсхолдер с индикацией ошибки
+                slideshowInterval = setInterval(nextSlide, SLIDESHOW_DELAY);
+                slideshowBtn.classList.add('active');
+                slideshowBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Пауза`;
+            }
+        }
+
+        // === Лайтбокс ===
+        function openLightbox() {
+            const slide = slides[currentSlide];
+            lightboxImg.src = `preview/full/${slide.file}.webp`;
+            lightboxImg.alt = slide.caption;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(e) {
+            if (e && e.target !== lightboxImg) {
+                closeLightboxDirect();
+            }
+        }
+
+        function closeLightboxDirect() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') closeLightboxDirect();
+            } else {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === ' ') { e.preventDefault(); toggleSlideshow(); }
+            }
+        });
+
+        // === Обработка ошибок загрузки изображений ===
+        function handleImageError(img) {
+            const src = img.src;
+            if (src.endsWith('.webp')) {
+                const pngSrc = src.replace('.webp', '.png');
+                img.src = pngSrc;
+            } else if (src.endsWith('.png')) {
+                const jpgSrc = src.replace('.png', '.jpg');
+                img.src = jpgSrc;
+            } else {
                 img.onerror = null;
                 img.style.display = 'none';
                 showToast("Внимание: Сбой загрузки скриншота.", "error");
