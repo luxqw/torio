@@ -125,11 +125,6 @@
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 0 60px rgba(255,143,64,0.15);
-            transform: scale(0.92);
-            transition: transform 0.35s ease;
-        }
-        .lightbox.active img {
-            transform: scale(1);
         }
         .lightbox-close {
             position: absolute;
@@ -955,13 +950,13 @@
 
         // === Список слайдов ===
         const slides = [
-            { file: '01_main-page',     label: '📟 Главная',       caption: '«Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.' },
-            { file: '02_last-update',   label: '✨ Свежее',        caption: '«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.' },
-            { file: '02.1_top',         label: '🏆 Топ',          caption: '«Топ торрентов» (Ctrl+T) — ежедневная подборка лучших релизов напрямую с rutor.is/top, разбитая по удобным категориям.' },
-            { file: '03_search-results',label: '🔍 Поиск',        caption: '«Результаты поиска» — отображение доступных сидов, пиров, источников и размера файлов на одной панели.' },
-            { file: '04_selected-result',label: '📄 Детали',      caption: '«Выбранный результат» — подробный разбор магнет-хеша, количества раздающих и прямая загрузка кнопкой d.' },
-            { file: '05_download',      label: '📥 Загр.',        caption: '«Прогресс загрузки» — наглядный мониторинг скорости закачки, времени окончания и очереди задач в фоне.' },
-            { file: '06_key-map',       label: '⌨️ Справка (?)',  caption: '«Карта навигации» — встроенная интерактивная справка по горячим клавишам, вызываемая кнопкой ?.' }
+            { file: '01_main-page',     label: '📟 Главная',       title: 'TORIO | Главный экран поиска',                               caption: '«Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.' },
+            { file: '02_last-update',   label: '✨ Свежее',        title: 'TORIO | Свежие релизы со всех источников',                    caption: '«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.' },
+            { file: '02.1_top',         label: '🏆 Топ',          title: 'TORIO | Топ торрентов за последние 24 часа',                  caption: '«Топ торрентов» (Ctrl+T) — ежедневная подборка лучших релизов напрямую с rutor.is/top, разбитая по удобным категориям.' },
+            { file: '03_search-results',label: '🔍 Поиск',        title: 'TORIO | Результаты поиска',                                   caption: '«Результаты поиска» — отображение доступных сидов, пиров, источников и размера файлов на одной панели.' },
+            { file: '04_selected-result',label: '📄 Детали',      title: 'TORIO | Детальная информация о торренте',                     caption: '«Выбранный результат» — подробный разбор магнет-хеша, количества раздающих и прямая загрузка кнопкой d.' },
+            { file: '05_download',      label: '📥 Загр.',        title: 'TORIO | Прогресс загрузки и очередь',                         caption: '«Прогресс загрузки» — наглядный мониторинг скорости закачки, времени окончания и очереди задач в фоне.' },
+            { file: '06_key-map',       label: '⌨️ Справка (?)',  title: 'TORIO | Карта горячих клавиш',                                caption: '«Карта навигации» — встроенная интерактивная справка по горячим клавишам, вызываемая кнопкой ?.' }
         ];
         let currentSlide = 0;
         let slideshowInterval = null;
@@ -1011,7 +1006,7 @@
             animateSlide(
                 `preview/${slide.file}.webp`,
                 slide.caption,
-                `torio ~ ${slide.file}`,
+                slide.title,
                 slide.caption,
                 `${index + 1}/${slides.length}`
             );
@@ -1044,8 +1039,12 @@
             const slide = slides[currentSlide];
             lightboxImg.src = `preview/full/${slide.file}.webp`;
             lightboxImg.alt = slide.caption;
+            lightboxImg.style.opacity = '0';
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
+            requestAnimationFrame(() => {
+                gsap.to(lightboxImg, { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' });
+            });
         }
 
         function closeLightbox(e) {
@@ -1065,18 +1064,28 @@
             if (idx >= slides.length) idx = 0;
             currentSlide = idx;
             const slide = slides[idx];
-            lightboxImg.src = `preview/full/${slide.file}.webp`;
-            lightboxImg.alt = slide.caption;
 
             // синхронизируем табы и предзагружаем thumb
             tabButtons.forEach((btn, i) => {
                 if (i === idx) { btn.classList.add('active-tab'); btn.classList.remove('text-gray-400'); }
                 else { btn.classList.remove('active-tab'); btn.classList.add('text-gray-400'); }
             });
-            terminalTitle.textContent = `torio ~ ${slide.file}`;
+            terminalTitle.textContent = slide.title;
             screenshotCaption.textContent = slide.caption;
             slideCounter.textContent = `${idx + 1}/${slides.length}`;
             terminalImg.src = `preview/${slide.file}.webp`;
+
+            // анимация смены в лайтбоксе
+            gsap.to(lightboxImg, {
+                opacity: 0, scale: 0.95, duration: 0.2, ease: 'power2.in',
+                onComplete: () => {
+                    lightboxImg.src = `preview/full/${slide.file}.webp`;
+                    lightboxImg.alt = slide.caption;
+                    gsap.to(lightboxImg, {
+                        opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out'
+                    });
+                }
+            });
         }
 
         document.addEventListener('keydown', (e) => {
