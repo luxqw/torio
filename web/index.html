@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>torio — Торрент-клиент и поиск прямо в вашем терминале</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../logo.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for scroll & transition animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#faf3f0',
+                            100: '#f5e6dc',
+                            500: '#ff8f40', // AYU accent orange
+                            600: '#f76d26',
+                            900: '#d95757',
+                            neon: '#ff8f40',
+                            cyan: '#aad94c',
+                            good: '#aad94c',
+                            warn: '#e6b450',
+                            bad: '#d95757',
+                            bright: '#d2a6ff'
+                        },
+                        darkBg: '#0f0f0f',
+                        darkCard: '#1a1a1a',
+                        ayuBg: '#0f0f0f',
+                        ayuCard: '#1a1a1a',
+                        ayuText: '#bfbdb6',
+                        ayuAlt: '#5a6378'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Кастомный сетчатый фон */
+        .grid-bg {
+            background-image: radial-gradient(rgba(255, 143, 64, 0.08) 1.2px, transparent 1.2px);
+            background-size: 28px 28px;
+        }
+        .light .grid-bg {
+            background-image: radial-gradient(rgba(255, 143, 64, 0.05) 1.2px, transparent 1.2px);
+        }
+        .glow-accent {
+            box-shadow: 0 0 50px -12px rgba(255, 143, 64, 0.35);
+        }
+        .glow-green {
+            box-shadow: 0 0 50px -12px rgba(170, 217, 76, 0.35);
+        }
+        /* Кастомизация скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+        .light ::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff8f40;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f76d26;
+        }
+        .active-tab {
+            border-color: #ff8f40 !important;
+            color: #ff8f40 !important;
+            background-color: rgba(255, 143, 64, 0.08);
+        }
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            max-height: 300px;
+        }
+        
+        /* LIGHT MODE STYLES */
+        body {
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+        body nav {
+            background-color: rgba(249, 250, 251, 0.95);
+            border-color: rgba(229, 231, 235, 0.5);
+        }
+        body a {
+            color: #374151;
+        }
+        body a:hover {
+            color: #ff8f40;
+        }
+        body button {
+            color: #374151;
+        }
+        
+        /* DARK MODE STYLES */
+        .dark body {
+            background-color: #0f0f0f;
+            color: #bfbdb6;
+        }
+        .dark nav {
+            background-color: rgba(15, 15, 15, 0.95);
+            border-color: rgba(90, 99, 120, 0.2);
+        }
+        .dark a {
+            color: #bfbdb6;
+        }
+        .dark a:hover {
+            color: #ff8f40;
+        }
+        .dark button {
+            color: #bfbdb6;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-[#0f0f0f] text-gray-900 dark:text-ayuText font-sans antialiased transition-colors duration-300 grid-bg">
+
+    <!-- Тосты/Уведомления -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Навигация -->
+    <nav class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/80 dark:bg-[#0f0f0f]/95 border-b border-gray-200 dark:border-ayuAlt/20 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Логотип -->
+                <div class="flex items-center gap-3">
+                    <img src="../logo.png" alt="torio logo" class="w-9 h-9 rounded-xl object-contain">
+                    <div>
+                        <span class="font-mono font-bold text-lg tracking-tight text-gray-900 dark:text-white">torio</span>
+                        <span class="text-[10px] block text-brand-neon font-mono font-semibold -mt-1">v1.4.2 [stable]</span>
+                    </div>
+                </div>
+
+                <!-- Меню (Desktop) -->
+                <div class="hidden lg:flex items-center gap-8 font-medium text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <a href="#interface" class="hover:text-brand-neon transition-colors">Интерфейс</a>
+                    <a href="#features" class="hover:text-brand-neon transition-colors">Преимущества</a>
+                    <a href="#sources" class="hover:text-brand-neon transition-colors">Источники</a>
+                    <a href="#keys" class="hover:text-brand-neon transition-colors">Горячие клавиши</a>
+                    <a href="#install" class="hover:text-brand-neon transition-colors">Установка</a>
+                </div>
+
+                <!-- Правая часть: Переключатель тем, GitHub, NPM -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Theme Toggle -->
+                    <button id="theme-btn" class="p-2 rounded-lg border border-gray-300 dark:border-ayuAlt/30 hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white" aria-label="Смена темы">
+                        <!-- Sun Icon -->
+                        <svg id="sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"/></svg>
+                        <!-- Moon Icon -->
+                        <svg id="moon-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </button>
+
+                    <!-- GitHub Button (hidden on very small screens) -->
+                    <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold bg-white dark:bg-gray-800 text-gray-950 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all flex-shrink-0">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                        <span class="hidden sm:inline">GitHub</span>
+                    </a>
+
+                    <!-- NPM Button -->
+                    <a href="https://www.npmjs.com/package/torio-cli" target="_blank" rel="noopener noreferrer" class="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold border border-brand-500/40 text-brand-neon hover:bg-brand-500/10 transition-all flex-shrink-0">
+                        NPM
+                    </a>
+
+                    <!-- Hamburger Menu (Mobile) -->
+                    <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg border border-gray-300 dark:border-ayuAlt/30 hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu lg:hidden border-t border-gray-200 dark:border-ayuAlt/20 bg-white dark:bg-[#0f0f0f]">
+                <div class="flex flex-col gap-1 py-3 px-2">
+                    <a href="#interface" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Интерфейс</a>
+                    <a href="#features" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Преимущества</a>
+                    <a href="#sources" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Источники</a>
+                    <a href="#keys" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Горячие клавиши</a>
+                    <a href="#install" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Установка</a>
+                    <div class="flex items-center gap-2 px-3 py-2 border-t border-gray-200 dark:border-ayuAlt/20 mt-2 pt-2">
+                        <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all">
+                            <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero-секция -->
+    <header class="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden">
+        <!-- Световые градиенты заднего плана -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-brand-500/5 rounded-full blur-[110px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <!-- Промо-плашка -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-neon text-xs font-mono font-semibold mb-6">
+                    <span>⚡ БЫСТРЫЙ ПОИСК И СКАЧИВАНИЕ ТОРРЕНТОВ БЕЗ БРАУЗЕРА</span>
+                </div>
+
+                <h1 class="text-2xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
+                    Поиск и скачивание торрентов<br>
+                    <span class="text-brand-neon">прямо из терминала</span>
+                </h1>
+
+                <p class="mt-5 text-base sm:text-lg text-gray-600 dark:text-gray-400 font-light leading-relaxed max-w-2xl mx-auto">
+                    Никакой сложной настройки, никаких всплывающих окон и лишних вкладок. Введите запрос, выберите результат, и <code class="font-mono text-brand-neon bg-brand-500/5 px-1.5 py-0.5 rounded">torio</code> запустит загрузку в нужную папку.
+                </p>
+
+                <!-- Команда установки -->
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+                    <div class="relative flex items-center bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-2xl p-1 pl-3 sm:pl-4 pr-1.5 sm:pr-2 w-full sm:w-auto max-w-md transition-all hover:border-brand-500/40">
+                        <span class="text-brand-neon font-mono text-xs sm:text-sm mr-1.5 sm:mr-2 select-none">$</span>
+                        <input type="text" id="npm-cmd" readonly value="npm i -g torio-cli" class="bg-transparent font-mono text-xs sm:text-sm text-gray-100 outline-none flex-1 sm:w-44 select-all min-w-0">
+                        <button onclick="copyToClipboard('npm-cmd')" class="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-gray-200 px-2 sm:px-3.5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-semibold transition-all flex-shrink-0 whitespace-nowrap">
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <span class="hidden sm:inline">Копировать</span>
+                            <span class="sm:hidden">Скопировать</span>
+                        </button>
+                    </div>
+
+                    <a href="#install" class="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl font-bold bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
+                        <span class="hidden sm:inline">Руководство по запуску</span>
+                        <span class="sm:hidden">Как запустить</span>
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Секция демонстрации интерфейса (Центральный элемент!) -->
+    <section id="interface" class="py-12 bg-gray-50 dark:bg-gray-950/40 border-t border-b border-gray-200 dark:border-gray-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10 scroll-anim opacity-0">
+                <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Интерактивный обзор интерфейса</h2>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Переключайте вкладки ниже, чтобы увидеть реальные экраны работы утилиты в CLI-режиме.</p>
+            </div>
+
+            <div class="max-w-5xl mx-auto">
+                <!-- Панель вкладок (Tabs) -->
+                <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-6" id="terminal-tabs">
+                    <button onclick="switchTerminalTab(0, '01_main-page')" class="active-tab px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-700 transition-all">
+                        📟 Главная
+                    </button>
+                    <button onclick="switchTerminalTab(1, '02_last-update')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        ✨ Свежее
+                    </button>
+                    <button onclick="switchTerminalTab(2, '02.1_top')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        🏆 Топ
+                    </button>
+                    <button onclick="switchTerminalTab(3, '03_search-results')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        🔍 Поиск
+                    </button>
+                    <button onclick="switchTerminalTab(4, '04_selected-result')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        📄 Детали
+                    </button>
+                    <button onclick="switchTerminalTab(5, '05_download')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        📥 Загр.
+                    </button>
+                    <button onclick="switchTerminalTab(6, '06_key-map')" class="px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl border border-gray-300 dark:border-gray-800 text-[11px] sm:text-xs font-mono font-medium hover:border-gray-400 dark:hover:border-gray-700 transition-all text-gray-600 dark:text-gray-400">
+                        ⌨️ Справка (?)
+                    </button>
+                </div>
+
+                <!-- Визуальный терминальный фрейм -->
+                <div class="w-full rounded-2xl bg-[#1a1a1a] border border-ayuAlt/30 shadow-2xl overflow-hidden glow-accent relative">
+                    <!-- Хедер десктопного окна (CachyOS/Ghostty style) -->
+                    <div class="bg-[#252525] px-4 py-3 flex items-center justify-between border-b border-ayuAlt/20 select-none">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-brand-bad/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-brand-warn/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-brand-good/80 inline-block"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-600 dark:text-gray-400 font-mono" id="terminal-title">torio ~ index</span>
+                        </div>
+                        <span class="text-[10px] text-gray-600 dark:text-gray-500 font-mono">60 FPS</span>
+                    </div>
+
+                    <!-- Окно скриншота с анимацией перехода -->
+                    <div class="relative p-1 bg-black/40 min-h-[250px] sm:min-h-[380px] lg:min-h-[480px] flex items-center justify-center overflow-hidden">
+                        <!-- Основной контейнер изображения -->
+                        <img id="terminal-screenshot" 
+                             src="../preview/01_main-page.png" 
+                             onerror="handleImageError(this)"
+                             alt="Интерфейс torio" 
+                             class="w-full h-auto max-h-[320px] sm:max-h-[420px] lg:max-h-[580px] object-contain rounded-lg transition-all duration-300">
+                    </div>
+                </div>
+
+                <!-- Подпись текущего скриншота -->
+                <p id="screenshot-caption" class="text-center mt-4 text-xs font-mono text-gray-600 dark:text-gray-500">
+                    «Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Особенности / Почему именно Torio -->
+    <section id="features" class="py-12 sm:py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 scroll-anim opacity-0">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Почему разработчики выбирают torio?</h2>
+                <p class="mt-4 text-gray-600 dark:text-gray-400 text-sm">Создан для тех, кто привык ценить быстродействие, автоматизировать задачи и управлять всем с клавиатуры без использования мыши.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Карта 1: Мультипоиск -->
+                <div class="feature-card bg-gray-100 dark:bg-gray-900/50 p-5 sm:p-8 rounded-2xl border border-gray-300 dark:border-gray-800 transition-all hover:border-brand-500/40 scroll-anim opacity-0">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-neon mb-6">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Параллельный мультипоиск</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
+                        Поиск выполняется одновременно по нескольким распределенным базам данных. Если один из источников временно офлайн, система бесшовно продолжит искать на остальных.
+                    </p>
+                </div>
+
+                <!-- Карта 2: Очередь -->
+                <div class="feature-card bg-gray-100 dark:bg-gray-900/50 p-5 sm:p-8 rounded-2xl border border-gray-300 dark:border-gray-800 transition-all hover:border-brand-500/40 scroll-anim opacity-0">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-neon mb-6">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Загрузка в фоне и очередь</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
+                        Задачи выполняются в фоне и не блокируют поисковую сессию. Вы можете продолжать серфинг по категориям и топам, пока файлы загружаются в целевую директорию.
+                    </p>
+                </div>
+
+                <!-- Карта 3: Раздача -->
+                <div class="feature-card bg-gray-100 dark:bg-gray-900/50 p-5 sm:p-8 rounded-2xl border border-gray-300 dark:border-gray-800 transition-all hover:border-brand-500/40 scroll-anim opacity-0">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-neon mb-6">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Авто-раздача по правилам</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">
+                        Полная поддержка стандартов BitTorrent-сетей. После успешного скачивания утилита переходит в режим сидирования, помогая сообществу, но функцию легко отключить одним нажатием.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция поддерживаемых источников -->
+    <section id="sources" class="py-12 sm:py-20 bg-gray-50 dark:bg-gray-950/40 border-t border-b border-gray-200 dark:border-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 scroll-anim opacity-0">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Интеграция с десятками баз данных</h2>
+                <p class="mt-4 text-gray-600 dark:text-gray-400 text-sm">Тщательно отобранные, оптимизированные парсеры источников гарантируют быстрые ответы без лагов и ложных срабатываний.</p>
+            </div>
+
+            <!-- Таблица источников в стиле хай-тек терминала -->
+            <div class="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl border border-gray-300 dark:border-gray-800 overflow-hidden shadow-xl scroll-anim opacity-0">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-[11px] sm:text-xs lg:text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-950 text-brand-neon border-b border-gray-300 dark:border-gray-800 select-none">
+                            <tr>
+                                <th class="p-3 sm:p-4 lg:p-5 font-bold uppercase tracking-wider text-[10px] sm:text-xs lg:text-sm">Категория</th>
+                                <th class="p-3 sm:p-4 lg:p-5 font-bold uppercase tracking-wider text-[10px] sm:text-xs lg:text-sm">Источники</th>
+                                <th class="p-3 sm:p-4 lg:p-5 font-bold uppercase tracking-wider text-right text-[10px] sm:text-xs lg:text-sm">Приоритет</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-300 dark:divide-gray-800/60 text-gray-700 dark:text-gray-300">
+                            <tr class="hover:bg-gray-100 dark:hover:bg-gray-800/30 transition-all">
+                                <td class="p-3 sm:p-4 lg:p-5 font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    🎮 Игры / Games
+                                </td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-gray-400 text-[10px] sm:text-xs lg:text-sm">FitGirl, NNM Club, Rutor</td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-right text-brand-neon font-bold text-[10px] sm:text-xs lg:text-sm">HIGH</td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/30 transition-all">
+                                <td class="p-3 sm:p-4 lg:p-5 font-bold text-white flex items-center gap-2">
+                                    🎬 Фильмы / Movies
+                                </td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-gray-400 text-[10px] sm:text-xs lg:text-sm">YTS, TPB, 1337x, NNM</td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-right text-brand-neon font-bold text-[10px] sm:text-xs lg:text-sm">AUTO</td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/30 transition-all">
+                                <td class="p-3 sm:p-4 lg:p-5 font-bold text-white flex items-center gap-2">
+                                    📺 Сериалы & ТВ / TV
+                                </td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-gray-400 text-[10px] sm:text-xs lg:text-sm">EZTV, TPB, 1337x, NNM</td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-right text-brand-neon font-bold text-[10px] sm:text-xs lg:text-sm">AUTO</td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/30 transition-all">
+                                <td class="p-3 sm:p-4 lg:p-5 font-bold text-white flex items-center gap-2">
+                                    🌸 Аниме / Anime
+                                </td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-gray-400 text-[10px] sm:text-xs lg:text-sm">Nyaa, SubsPlease, Rutor</td>
+                                <td class="p-3 sm:p-4 lg:p-5 text-right text-brand-neon font-bold text-[10px] sm:text-xs lg:text-sm">HIGH</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция Горячих Клавиш / Интерактивный Хоткей-Мап -->
+    <section id="keys" class="py-12 sm:py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16 scroll-anim opacity-0">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white">Управление в один клик</h2>
+                <p class="mt-4 text-gray-400 text-sm">Не нужно тянуться к мышке. Полный список комбинаций клавиш для контроля очередей и поиска.</p>
+            </div>
+
+            <!-- Хоткей раскладка -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+                
+                <!-- Блок Навигации -->
+                <div class="bg-gray-900 p-4 sm:p-6 rounded-2xl border border-gray-800 hover:border-brand-neon/40 transition-all scroll-anim opacity-0">
+                    <h3 class="font-mono text-brand-neon font-bold text-xs sm:text-sm uppercase tracking-wider mb-4 border-b border-gray-800 pb-2">📂 Навигация</h3>
+                    <div class="space-y-2.5 font-mono text-[11px] sm:text-xs">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Движение</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">↑ ↓ ← →</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Смена панелей</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">Tab</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Шаг назад</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">Esc</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Папка загрузок</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">O</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок Поиска -->
+                <div class="bg-gray-900 p-4 sm:p-6 rounded-2xl border border-gray-800 hover:border-brand-neon/40 transition-all scroll-anim opacity-0">
+                    <h3 class="font-mono text-brand-neon font-bold text-xs sm:text-sm uppercase tracking-wider mb-4 border-b border-gray-800 pb-2">🔍 Поиск</h3>
+                    <div class="space-y-2.5 font-mono text-[11px] sm:text-xs">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Редактировать запрос</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">/</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Сортировка</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">S</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Копировать Magnet</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">Y</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Вставить Magnet</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок Загрузки/Раздачи -->
+                <div class="bg-gray-900 p-4 sm:p-6 rounded-2xl border border-gray-800 hover:border-brand-neon/40 transition-all scroll-anim opacity-0">
+                    <h3 class="font-mono text-brand-neon font-bold text-xs sm:text-sm uppercase tracking-wider mb-4 border-b border-gray-800 pb-2">📥 Загр./Раздачи</h3>
+                    <div class="space-y-2.5 font-mono text-[11px] sm:text-xs">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Пауза / Продолжить</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">P</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Отмена / Удаление</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">C</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Повторить при ошибке</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">F</span>
+                        </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-gray-400 text-[10px] sm:text-xs">Скачать заново</span>
+                            <span class="bg-gray-800 px-2 py-1 rounded text-white font-bold text-[10px] sm:text-xs whitespace-nowrap">D</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция Установки (Инструкция) -->
+    <section id="install" class="py-12 sm:py-20 bg-gray-50 dark:bg-gray-950/40 border-t border-b border-gray-200 dark:border-gray-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-12 items-center">
+                
+                <!-- Левая сторона: Текст/Описания шагов -->
+                <div class="lg:col-span-5 mb-10 sm:mb-12 lg:mb-0 scroll-anim opacity-0">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white leading-tight">Запуск в три простых шага</h2>
+                    <p class="mt-3 sm:mt-4 text-gray-400 text-xs sm:text-sm leading-relaxed">
+                        Не требуется ставить сторонние тяжелые GUI-клиенты и раздувать операционную систему. Вам нужен только установленный Node.js v22+.
+                    </p>
+
+                    <!-- Шаги -->
+                    <div class="mt-6 sm:mt-8 space-y-3 sm:space-y-6">
+                        <div class="flex gap-2.5 sm:gap-4">
+                            <span class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-500/10 text-brand-neon font-mono font-bold flex items-center justify-center text-xs sm:text-sm border border-brand-500/20">1</span>
+                            <div>
+                                <h4 class="font-bold text-white text-xs sm:text-sm">Убедитесь в наличии среды</h4>
+                                <p class="text-[10px] sm:text-xs text-gray-400 mt-1">Версия Node.js должна быть не ниже 22-й. Проверьте через команду <code class="bg-gray-900 px-1 py-0.5 rounded text-brand-neon text-[9px] sm:text-[10px]">node -v</code>.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2.5 sm:gap-4">
+                            <span class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-500/10 text-brand-neon font-mono font-bold flex items-center justify-center text-xs sm:text-sm border border-brand-500/20">2</span>
+                            <div>
+                                <h4 class="font-bold text-white text-xs sm:text-sm">Разовый быстрый запуск</h4>
+                                <p class="text-[10px] sm:text-xs text-gray-400 mt-1">Запустите интерактивную сессию в один клик без глобального скачивания пакета через NPX.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2.5 sm:gap-4">
+                            <span class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-500/10 text-brand-neon font-mono font-bold flex items-center justify-center text-xs sm:text-sm border border-brand-500/20">3</span>
+                            <div>
+                                <h4 class="font-bold text-white text-xs sm:text-sm">Глобальная установка</h4>
+                                <p class="text-[10px] sm:text-xs text-gray-400 mt-1">Зарегистрируйте псевдоним в системе команд и вызывайте из любого каталога через вызов <code class="bg-gray-900 px-1 py-0.5 rounded text-brand-neon text-[9px] sm:text-[10px]">torio</code>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая сторона: Терминальный гайд сборщика -->
+                <div class="lg:col-span-7 scroll-anim opacity-0">
+                    <div class="w-full rounded-2xl bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-300 font-mono text-[10px] sm:text-xs lg:text-sm shadow-2xl border border-gray-300 dark:border-gray-800 overflow-hidden">
+                        <!-- Шапка -->
+                        <div class="bg-gray-100 dark:bg-gray-950 px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between border-b border-gray-300 dark:border-gray-800 select-none">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-brand-neon"></span>
+                                <span class="text-[9px] sm:text-xs text-gray-600 dark:text-gray-400 font-semibold">terminal ~ setup.sh</span>
+                            </div>
+                            <span class="text-[8px] sm:text-[10px] text-gray-600">bash/zsh</span>
+                        </div>
+
+                        <!-- Код и шаги установки -->
+                        <div class="p-3 sm:p-5 space-y-3 sm:space-y-4">
+                            <div>
+                                <span class="text-gray-500"># 1. Проверить версию Node.js</span>
+                                <div class="text-gray-200 mt-1">$ node -v</div>
+                                <div class="text-brand-neon">v22.2.0</div>
+                            </div>
+                            <div class="border-t border-gray-800/80 pt-2 sm:pt-3">
+                                <span class="text-gray-500"># 2. Быстрый локальный старт</span>
+                                <div class="text-gray-200 mt-1">$ npx torio-cli</div>
+                                <div class="text-gray-400">Инициализация реестра... запуск...</div>
+                            </div>
+                            <div class="border-t border-gray-800/80 pt-2 sm:pt-3">
+                                <span class="text-gray-500"># 3. Глобальная установка и запуск по короткой команде</span>
+                                <div class="text-gray-200 mt-1">$ npm install -g torio-cli</div>
+                                <div class="text-brand-neon">✔ Added 1 package in 0.94s</div>
+                                <div class="text-gray-200 mt-1">$ torio</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер по аналогии с Crossout Optimizer с адаптированным отказом от ответственности -->
+    <footer class="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-900 text-gray-600 dark:text-gray-400 text-[11px] sm:text-xs py-10 sm:py-12 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-8">
+                
+                <!-- Левый блок: Название и описание -->
+                <div class="md:col-span-4 flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <img src="../logo.png" alt="torio logo" class="w-6 h-6 object-contain">
+                        <span class="font-mono font-bold text-lg text-white">torio-cli</span>
+                        <span class="text-[10px] bg-brand-500/10 text-brand-neon px-2 py-0.5 rounded-full font-mono">MIT License</span>
+                    </div>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Высокопроизводительный асинхронный CLI-клиент для поиска и оркестрации P2P-загрузок. Создан специально для разработчиков и сисадминов, предпочитающих клавиатурное управление.
+                    </p>
+                </div>
+
+                <!-- Средний блок: Ссылки -->
+                <div class="md:col-span-3">
+                    <h4 class="font-semibold text-white mb-3 uppercase tracking-wider text-[10px]">Ресурсы и репозитории</h4>
+                    <ul class="space-y-2 font-mono text-[11px]">
+                        <li>
+                            <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="hover:text-brand-neon transition-colors flex items-center gap-1.5">
+                                🔗 GitHub Repository
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.npmjs.com/package/torio-cli" target="_blank" rel="noopener noreferrer" class="hover:text-brand-neon transition-colors flex items-center gap-1.5">
+                                📦 NPM Registry package
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/y-tretyakov" target="_blank" rel="noopener noreferrer" class="hover:text-brand-neon transition-colors">
+                                👨‍💻 Страница y-tretyakov
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Правый блок: Дисклеймер (Отказ от ответственности) -->
+                <div class="md:col-span-5">
+                    <h4 class="font-semibold text-gray-300 mb-3 uppercase tracking-wider text-[10px] text-red-500/80">Отказ от ответственности</h4>
+                    <p class="text-[11px] text-gray-500 leading-relaxed border-l-2 border-red-500/30 pl-3">
+                        Программное обеспечение «torio» (включая CLI утилиту torio-cli) предоставляется на условиях свободной лицензии MIT «как есть», без каких-либо явных или подразумеваемых гарантий. Программа является исключительно поисковым и связующим децентрализованным терминальным интерфейсом к сторонним BitTorrent-сетям. 
+                        Разработчик не хранит, не размещает, не модерирует и не передает данные на собственных серверах — обмен идет напрямую между P2P узлами (пирами). Любое использование утилиты для скачивания или раздачи материалов должно осуществляться в строгом соответствии с действующим законодательством вашей юрисдикции. Автор не несет ответственности за возможные нарушения авторских прав со стороны третьих лиц при использовании данного инструмента.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Нижняя панель с копирайтом -->
+            <div class="pt-8 border-t border-gray-200 dark:border-gray-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-gray-600 dark:text-gray-500 font-mono">
+                <p>© 2026 y-tretyakov. Все права сохранены. Продукт разработан инженерами для инженеров.</p>
+                <div class="flex gap-4 mt-4 sm:mt-0">
+                    <a href="#" class="hover:underline">Наверх страницы ↑</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Основной управляющий скрипт -->
+    <script>
+        // === Инициализация GSAP & ScrollTrigger ===
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Двунаправленные анимации плавного проявления элементов
+        const animatedElements = document.querySelectorAll('.scroll-anim');
+        animatedElements.forEach((el) => {
+            gsap.fromTo(el, 
+                { opacity: 0, y: 35 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.7,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%", 
+                        end: "bottom 15%",
+                        toggleActions: "play none none reverse", // Обеспечивает обратное скрытие при движении вверх
+                        markers: false
+                    }
+                }
+            );
+        });
+
+        // Анимация карточек фич по очереди
+        gsap.fromTo(".feature-card", 
+            { opacity: 0, y: 40 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#features",
+                    start: "top 75%"
+                }
+            }
+        );
+
+        // === Initialize Theme on Page Load ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeBtn = document.getElementById('theme-btn');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            const htmlElement = document.documentElement;
+            
+            // Initialize theme from localStorage or system preference
+            function initTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+                
+                if (isDark) {
+                    htmlElement.classList.add('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                } else {
+                    htmlElement.classList.remove('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                }
+            }
+            
+            // Initialize on load
+            initTheme();
+            
+            // Handle theme button clicks
+            themeBtn.addEventListener('click', () => {
+                if (htmlElement.classList.contains('dark')) {
+                    htmlElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                    showToast("Включена светлая тема", "info");
+                } else {
+                    htmlElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                    showToast("Включена темная тема", "info");
+                }
+            });
+        });
+
+        // === Mobile Menu Toggle ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                });
+                
+                // Close menu when a link is clicked
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                    });
+                });
+            }
+        });
+
+        // === Копирование в буфер обмена ===
+        function copyToClipboard(elementId) {
+            const copyText = document.getElementById(elementId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                showToast("Команда установки скопирована!", "success");
+            } catch (err) {
+                showToast("Не удалось скопировать команду автоматически.", "error");
+            }
+        }
+
+        // === Тосты (Вместо вредных браузерных alert) ===
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-gray-900 dark:bg-gray-900 border-gray-800 dark:border-gray-800 text-white";
+            if (type === "success") {
+                bgClass = "bg-green-100 dark:bg-brand-900/90 text-green-900 dark:text-brand-neon border-green-300 dark:border-brand-500/50";
+            } else if (type === "error") {
+                bgClass = "bg-red-100 dark:bg-red-950/90 text-red-900 dark:text-red-400 border-red-300 dark:border-red-500/50";
+            } else if (type === "info") {
+                bgClass = "bg-blue-100 dark:bg-gray-900 text-blue-900 dark:text-gray-300 border-blue-300 dark:border-gray-700";
+            }
+
+            toast.className = `flex items-center gap-2.5 px-4.5 py-3 rounded-xl border text-xs font-mono font-semibold shadow-2xl pointer-events-auto transition-all duration-300 translate-x-12 opacity-0 ${bgClass}`;
+            toast.innerHTML = `
+                <span class="text-brand-neon">⚡</span>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+            }, 40);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // === Управление Табами Скриншотов в Терминале ===
+        const terminalImg = document.getElementById('terminal-screenshot');
+        const terminalTitle = document.getElementById('terminal-title');
+        const screenshotCaption = document.getElementById('screenshot-caption');
+        const tabButtons = document.querySelectorAll('#terminal-tabs button');
+
+        const captions = {
+            '01_main-page': '«Главный экран» — минималистичный и быстрый ввод поискового запроса или magnet-ссылки.',
+            '02_last-update': '«Последние поступления» — свежие релизы со всех подключённых источников, упорядоченные по времени добавления.',
+            '02.1_top': '«Топ торрентов» (Ctrl+T) — ежедневная подборка лучших релизов напрямую с rutor.is/top, разбитая по удобным категориям.',
+            '03_search-results': '«Результаты поиска» — отображение доступных сидов, пиров, источников и размера файлов на одной панели.',
+            '04_selected-result': '«Выбранный результат» — подробный разбор магнет-хеша, количества раздающих и прямая загрузка кнопкой d.',
+            '05_download': '«Прогресс загрузки» — наглядный мониторинг скорости закачки, времени окончания и очереди задач в фоне.',
+            '06_key-map': '«Карта навигации» — встроенная интерактивная справка по горячим клавишам, вызываемая кнопкой ?.'
+        };
+
+        function switchTerminalTab(tabIndex, fileName) {
+            // Переключаем активный класс на табах
+            tabButtons.forEach((btn, idx) => {
+                if (idx === tabIndex) {
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-gray-400');
+                } else {
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-gray-400');
+                }
+            });
+
+            // Мягко гасим и меняем изображение через GSAP
+            gsap.to(terminalImg, {
+                opacity: 0.1,
+                scale: 0.98,
+                duration: 0.2,
+                onComplete: () => {
+                    // Пытаемся грузить .png как базовый вариант
+                    terminalImg.src = `../preview/${fileName}.png`;
+                    terminalImg.alt = captions[fileName];
+                    
+                    // Обновляем заголовок и описание
+                    terminalTitle.textContent = `torio ~ ${fileName}`;
+                    screenshotCaption.textContent = captions[fileName];
+
+                    gsap.to(terminalImg, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.35,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+
+        // Логика автоматического фоллбека с PNG на JPG, если файлы имеют расширение JPG в деплое
+        function handleImageError(img) {
+            if (img.src.endsWith('.png')) {
+                // Если произошла ошибка загрузки PNG - пробуем загрузить одноименный JPG
+                const newSrc = img.src.replace('.png', '.jpg');
+                img.src = newSrc;
+            } else {
+                // Если и JPG упал, показываем аккуратный плейсхолдер с индикацией ошибки
+                img.onerror = null;
+                img.style.display = 'none';
+                showToast("Внимание: Сбой загрузки скриншота.", "error");
+            }
+        }
+    </script>
+</body>
+</html>
