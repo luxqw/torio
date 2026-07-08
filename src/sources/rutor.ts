@@ -4,6 +4,11 @@ import { buildMagnet } from "./magnet";
 import { parseSize } from "../util/format";
 import type { SearchOptions, Source, SourceId, TorrentResult } from "./types";
 
+export interface RutorTopSection {
+  title: string;
+  results: TorrentResult[];
+}
+
 const HOST = "https://rutor.info";
 
 const RU_MONTHS: Record<string, number> = {
@@ -28,66 +33,70 @@ function parseRutorDate(s: string): number | undefined {
 //   Russian:  1,45 ГБ, 856 МБ
 //   Plain:    12345678 (raw bytes)
 function parseRutorSize(rowHtml: string): number {
-  // Rutor uses &nbsp; between number and unit (e.g. "5.00&nbsp;GB")
   const cleaned = rowHtml.replace(/&nbsp;/gi, " ");
 
-  // Try raw bytes (bare number in a <td>)
   const raw = cleaned.match(/<td[^>]*>\s*(\d{5,})\s*<\/td>/i);
   if (raw) return Number(raw[1]);
 
-  // Try human-readable: English or Russian units in any <td>
   const hr = cleaned.match(/<td[^>]*>\s*([\d.,]+\s*(?:[KMGT]i?B|[КМГТ]Б|[кмгт]б))\s*<\/td>/i);
   if (hr) return parseSize(hr[1]!);
 
-  // Fallback: look for align="right" (older Rutor layout)
   const fallback = cleaned.match(/<td[^>]*align="right"[^>]*>([\d.,]+\s*(?:[KMGT]i?B|B))\s*<\/td>/i);
   if (fallback) return parseSize(fallback[1]!);
 
   return 0;
 }
 
+function parseRow(rowHtml: string, source: SourceId): TorrentResult | null {
+  const cleaned = rowHtml.replace(/&nbsp;/gi, " ");
+
+  const magnet = cleaned.match(/href="(magnet:[^"]+)"/i)?.[1];
+  if (!magnet) return null;
+
+  const infoHash = magnet.match(/xt=urn:btih:([a-f0-9]{40})/i)?.[1]?.toLowerCase();
+  if (!infoHash) return null;
+
+  const nameMatch = cleaned.match(/href="(\/torrent\/\d+\/[^"]+)"[^>]*>([^<]+)<\/a>/i);
+  if (!nameMatch) return null;
+  const name = unescapeEntities(nameMatch[2]!.trim());
+
+  const seeders = Number(cleaned.match(/<span class="green">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
+  const leechers = Number(cleaned.match(/<span class="red">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
+
+  const sizeBytes = parseRutorSize(cleaned);
+
+  const dateMatch = cleaned.match(/<td[^>]*>\s*(\d{1,2}\s+\S{3}\s+\d{2})\s*<\/td>/);
+  const added = dateMatch ? parseRutorDate(dateMatch[1]!) : undefined;
+
+  return {
+    infoHash,
+    name,
+    sizeBytes,
+    seeders,
+    leechers,
+    source,
+    magnet: buildMagnet(infoHash, name),
+    added,
+  };
+}
+
+function parseRowsFromTable(tableHtml: string, source: SourceId): TorrentResult[] {
+  const out: TorrentResult[] = [];
+  const rows = tableHtml.split(/<tr\s+class="(?:gai|tum)">/i).slice(1);
+  for (const row of rows) {
+    const end = row.indexOf("</tr>");
+    const rowHtml = end >= 0 ? row.slice(0, end) : row;
+    const r = parseRow(rowHtml, source);
+    if (r) out.push(r);
+  }
+  return out;
+}
+
 function parseIndex(html: string, source: SourceId): TorrentResult[] {
   const start = html.indexOf('<div id="index">');
   if (start < 0) return [];
   const section = html.slice(start);
-  const out: TorrentResult[] = [];
-
-  const rows = section.split(/<tr\s+class="(?:gai|tum)">/i).slice(1);
-  for (const row of rows) {
-    const end = row.indexOf("</tr>");
-    const rowHtml = end >= 0 ? row.slice(0, end) : row;
-
-    const magnet = rowHtml.match(/href="(magnet:[^"]+)"/i)?.[1];
-    if (!magnet) continue;
-
-    const infoHash = magnet.match(/xt=urn:btih:([a-f0-9]{40})/i)?.[1]?.toLowerCase();
-    if (!infoHash) continue;
-
-    const nameMatch = rowHtml.match(/href="(\/torrent\/\d+\/[^"]+)"[^>]*>([^<]+)<\/a>/i);
-    if (!nameMatch) continue;
-    const name = unescapeEntities(nameMatch[2]!.trim());
-
-    const seeders = Number(rowHtml.match(/<span class="green">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
-    const leechers = Number(rowHtml.match(/<span class="red">.*?(\d+)\s*<\/span>/i)?.[1] ?? 0);
-
-    const sizeBytes = parseRutorSize(rowHtml);
-
-    const dateMatch = rowHtml.match(/<td[^>]*>\s*(\d{1,2}\s+[А-Яа-я]{3}\s+\d{2})\s*<\/td>/);
-    const added = dateMatch ? parseRutorDate(dateMatch[1]!) : undefined;
-
-    out.push({
-      infoHash,
-      name,
-      sizeBytes,
-      seeders,
-      leechers,
-      source,
-      magnet: buildMagnet(infoHash, name),
-      added,
-    });
-  }
-
-  return out;
+  return parseRowsFromTable(section, source);
 }
 
 async function search(
@@ -109,6 +118,44 @@ async function search(
 
   const html = await res.text();
   return parseIndex(html, source);
+}
+
+export async function fetchRutorTop(opts: SearchOptions = {}): Promise<RutorTopSection[]> {
+  const url = `${HOST}/top`;
+  const res = await fetchResilient(url, {
+    headers: { "User-Agent": USER_AGENT },
+    signal: opts.signal,
+    retries: 2,
+  });
+  if (!res.ok) throw new HttpError(res.status, `Rutor top returned ${res.status}`);
+
+  const html = await res.text();
+  return parseTopSections(html);
+}
+
+function parseTopSections(html: string): RutorTopSection[] {
+  const start = html.indexOf('<div id="index">');
+  if (start < 0) return [];
+  const indexContent = html.slice(start + '<div id="index">'.length);
+
+  const sections: RutorTopSection[] = [];
+  const parts = indexContent.split(/<h2>/);
+  for (const part of parts) {
+    const h2End = part.indexOf("</h2>");
+    if (h2End < 0) continue;
+
+    const titleHtml = part.slice(0, h2End);
+    const title = unescapeEntities(titleHtml.replace(/<[^>]+>/g, "").trim());
+    if (!title) continue;
+
+    const afterTitle = part.slice(h2End + "</h2>".length);
+    const results = parseRowsFromTable(afterTitle, "rutor-movies");
+    if (results.length > 0) {
+      sections.push({ title, results });
+    }
+  }
+
+  return sections;
 }
 
 export const rutorMovies: Source = {

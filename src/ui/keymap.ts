@@ -22,6 +22,7 @@ export const HELP_GROUPS: HelpGroup[] = [
       { keys: "esc", label: "Назад" },
       { keys: "o", label: "Папка загрузок" },
       { keys: "t", label: "Доп. трекеры" },
+      { keys: "^t", label: "🏆 Топ" },
       { keys: "q", label: "Выход" },
     ],
   },
@@ -59,6 +60,8 @@ export const HELP_GROUPS: HelpGroup[] = [
 const NAVIGATE: Hint = { keys: "↑↓←→", label: "Движ.", icon: ICON.pointer };
 
 const ALWAYS: Hint = { keys: "?", label: "Клавиши", icon: ICON.all };
+
+const CTRL_T_TOP: Hint = { keys: "^t", label: "Топ", icon: "🏆" };
 
 const SWITCH: Hint = { keys: "tab", label: "Смена", icon: ICON.library };
 
@@ -127,7 +130,20 @@ export function footerHints(
     { keys: "y", label: "Коп.", icon: ICON.copy },
     { keys: "s", label: "Сорт.", icon: ICON.sort },
     { keys: "/", label: "Поиск", icon: ICON.search },
+    CTRL_T_TOP,
     SWITCH,
+    ALWAYS,
+  ];
+}
+
+export function topFooterHints(): Hint[] {
+  return [
+    NAVIGATE,
+    { keys: "d", label: "Скачать", icon: ICON.down },
+    { keys: "y", label: "Коп.", icon: ICON.copy },
+    { keys: "s", label: "Сорт.", icon: ICON.sort },
+    { keys: "^t", label: "🏆 Топ", icon: undefined },
+    { keys: "esc", label: "Назад", icon: ICON.back },
     ALWAYS,
   ];
 }

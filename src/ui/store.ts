@@ -5,7 +5,7 @@ import type { HistoryItem } from "../download/history";
 import type { QueueItem, SeedItem } from "../download/types";
 import type { SourceGroup, SourceId } from "../sources/types";
 
-export type View = "splash" | "browser";
+export type View = "splash" | "browser" | "top";
 
 export type Category = "all" | "games" | "movies" | "tv" | "anime";
 

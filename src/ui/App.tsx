@@ -33,9 +33,10 @@ import { Seeding } from "./components/Seeding";
 import { Spinner } from "./components/Spinner";
 import { TabTitle } from "./components/TabTitle";
 import { Splash } from "./views/Splash";
+import { Top } from "./views/Top";
 import { FolderPrompt } from "./components/FolderPrompt";
 import { TrackersPrompt } from "./components/TrackersPrompt";
-import { footerHints } from "./keymap";
+import { footerHints, topFooterHints } from "./keymap";
 import { COLOR, ICON } from "./theme";
 import { useMouseWheel } from "./hooks/useMouseWheel";
 import type { SourceId } from "../sources/types";
@@ -373,7 +374,11 @@ export function App({
         setEditingFolder(true);
         return;
       }
-      if (input === "t") {
+      if (key.ctrl && input === "t") {
+        setView("top");
+        return;
+      }
+      if (input === "t" && !key.ctrl) {
         setShowHelp(false);
         setEditingTrackers(true);
         return;
@@ -408,7 +413,7 @@ export function App({
         return;
       }
     },
-    { isActive: isRawModeSupported && view === "browser" && !!store },
+    { isActive: isRawModeSupported && (view === "browser" || view === "top") && !!store },
   );
 
   if (!store) {
@@ -481,7 +486,9 @@ export function App({
         >
           <Sidebar />
           <Box flexGrow={1} flexDirection="column">
-            {section === "downloads" ? (
+            {view === "top" ? (
+              <Top />
+            ) : section === "downloads" ? (
               <Downloads />
             ) : section === "seeding" ? (
               <Seeding />
@@ -493,7 +500,7 @@ export function App({
 
         {showFooter ? (
           <Box display={showHelp || editingFolder || editingTrackers ? "none" : "flex"}>
-            <Footer hints={footerHints(region, section, downloadFocus, seedFocus)} />
+            <Footer hints={view === "top" ? topFooterHints() : footerHints(region, section, downloadFocus, seedFocus)} />
           </Box>
         ) : null}
       </Box>

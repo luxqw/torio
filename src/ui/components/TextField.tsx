@@ -70,7 +70,7 @@ export function TextField({
       }
       if (key.upArrow || key.tab || (key.ctrl && input === "c")) return;
 
-      if (key.return) {
+      if (key.return && !key.ctrl) {
         onSubmit?.(value);
         return;
       }

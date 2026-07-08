@@ -11,12 +11,18 @@ const CATEGORIES = sourcesByGroup()
   .join(`  ${ICON.dot}  `);
 
 export function Splash() {
-  const { submitQuery, quitAll, cols, rows } = useStore();
+  const { submitQuery, quitAll, setView, cols, rows } = useStore();
   const { isRawModeSupported } = useStdin();
 
   useInput(
     (input, key) => {
-      if (key.escape || (key.ctrl && input === "c")) quitAll();
+      if (key.escape || (key.ctrl && input === "c")) {
+        quitAll();
+        return;
+      }
+      if (key.ctrl && input === "t") {
+        setView("top");
+      }
     },
     { isActive: isRawModeSupported },
   );
@@ -62,6 +68,9 @@ export function Splash() {
           <Text dimColor>пусто </Text>
           <Text color={COLOR.alt}>↵</Text>
           <Text dimColor> обзор</Text>
+          <Text dimColor>{`  ${ICON.dot}  `}</Text>
+          <Text color={COLOR.alt}>^t</Text>
+          <Text dimColor> 🏆 топ</Text>
           <Text dimColor>{`  ${ICON.dot}  `}</Text>
           <Text color={COLOR.alt}>^c</Text>
           <Text dimColor> выход</Text>
