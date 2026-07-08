@@ -4,7 +4,7 @@ import { useStore } from "../store";
 import { Panel } from "../components/Panel";
 import { Rule } from "../components/Rule";
 import { fetchRutorTop, type RutorTopSection } from "../../sources/rutor";
-import { COLOR, GUTTER, ICON, sourceStyle } from "../theme";
+import { COLOR, GUTTER, ICON, RULE, sourceStyle } from "../theme";
 import { cleanText, formatBytes } from "../../util/format";
 import type { TorrentResult } from "../../sources/types";
 
@@ -12,6 +12,7 @@ type Mode = "list" | "detail";
 
 // ── columns (ширины, включая отступы) ────────────────
 const DATE_W = 7;
+const GAP = 3;
 const SIZE_W = 10;
 const HEALTH_W = 13;
 const SRC_W = 5;
@@ -113,26 +114,7 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
   );
 }
 
-// ── Emoji by title keywords ─────────────────────────
 
-const CAT_EMOJI: Record<string, string> = {
-  "24 часа": "⏱️",
-  "зарубежн": "🎬",
-  "наши фильм": "🇷🇺",
-  "тв": "📺",
-  "игры": "🎮",
-  "программ": "💿",
-  "музык": "🎵",
-  "книг": "📖",
-  "аниме": "🌟",
-};
-
-function catEmoji(title: string): string {
-  for (const [kw, em] of Object.entries(CAT_EMOJI)) {
-    if (title.toLowerCase().includes(kw)) return em;
-  }
-  return "📁";
-}
 
 // ── Component ───────────────────────────────────────
 
@@ -259,74 +241,58 @@ export function Top() {
   const count = totalItems > 0 ? `(${totalItems})` : undefined;
 
   // ── render: list ─────────────────────────────────
+  const innerWidth = contentWidth - 4; // panel border(2) + paddingX(2)
+  const nameColW = Math.max(4, innerWidth - GUTTER - DATE_W - GAP - SIZE_W - HEALTH_W - SRC_W - 1);
+
+  function buildHeaderLine(show: boolean): string {
+    const gutter = " ".repeat(GUTTER);
+    const gap = " ".repeat(GAP);
+    const dateH = "Дата".padStart(DATE_W);
+    const nameH = "Название".padEnd(nameColW);
+    const sizeH = "Размер".padStart(SIZE_W);
+    const healthH = "Сид/Пир".padStart(HEALTH_W);
+    const srcH = "Ист.".padStart(SRC_W);
+    if (show) return (gutter + dateH + gap + nameH + sizeH + healthH + srcH).padEnd(innerWidth);
+    const nameHWide = Math.max(4, innerWidth - GUTTER - DATE_W - GAP - SRC_W - 1);
+    return (gutter + dateH + gap + "Название".padEnd(nameHWide) + srcH).padEnd(innerWidth);
+  }
+
   function renderList(): ReactNode {
     if (loading) return <Box><Text dimColor>Загрузка топа с rutor.is…</Text></Box>;
     if (error) return <Box><Text color={COLOR.warn}>Ошибка: {error}</Text></Box>;
     if (totalItems === 0) return <Box><Text dimColor>Сейчас ничего нового.</Text></Box>;
 
     let lineIdx = 0;
-
     const rows: ReactNode[] = [];
 
     for (const vs of visibleSections) {
-      const titleLine = lineIdx;
-      const colHdrLine = lineIdx + 1;
-
-      // section title
+      // ── category title row ──
+      const titleStr = vs.title.toUpperCase();
+      const fillLen = Math.max(1, innerWidth - titleStr.length - 3);
+      const sepLine = `${titleStr} ─${"─".repeat(fillLen)}`;
       rows.push(
         <Box key={`t-${vs.title}`}>
           <Box flexGrow={1} minWidth={0}>
-            <Text bold color={COLOR.accent}>
-              {catEmoji(vs.title)}{" "}{vs.title}
-            </Text>
+            <Text bold color={COLOR.accent} wrap="truncate-end">{sepLine}</Text>
           </Box>
           <Box width={1} flexShrink={0}>
-            <Text dimColor>{scrollChars[titleLine]}</Text>
+            <Text dimColor>{scrollChars[lineIdx]}</Text>
           </Box>
         </Box>,
       );
+      lineIdx++;
 
-      // column headers
+      // ── header row (continuous full-width background) ──
       rows.push(
         <Box key={`h-${vs.title}`}>
-          <Box width={GUTTER} flexShrink={0} />
-          <Box width={DATE_W} flexShrink={0}>
-            <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold wrap="truncate-start">
-              {" Дата".padEnd(DATE_W)}
-            </Text>
-          </Box>
-          <Box flexGrow={1} minWidth={0}>
-            <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold wrap="truncate-start">
-              {" Название".padEnd(Math.max(10, 1))}
-            </Text>
-          </Box>
-          {showStats ? (
-            <>
-              <Box width={SIZE_W} flexShrink={0} justifyContent="flex-end">
-                <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold>
-                  {"Размер".padStart(SIZE_W)}
-                </Text>
-              </Box>
-              <Box width={HEALTH_W} flexShrink={0} justifyContent="flex-end">
-                <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold>
-                  {"Сид/Пир".padStart(HEALTH_W)}
-                </Text>
-              </Box>
-            </>
-          ) : null}
-          <Box width={SRC_W} flexShrink={0} justifyContent="flex-end">
-            <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold>
-              {"Ист.".padStart(SRC_W)}
-            </Text>
-          </Box>
-          <Box width={1} flexShrink={0}>
-            <Text dimColor>{scrollChars[colHdrLine]}</Text>
-          </Box>
+          <Text backgroundColor={HEADER_BG} color={HEADER_FG} bold wrap="truncate-end">
+            {buildHeaderLine(showStats)}
+          </Text>
         </Box>,
       );
+      lineIdx++;
 
-      lineIdx += 2;
-
+      // ── data rows ──
       for (let ri = 0; ri < vs.results.length; ri++) {
         const r = vs.results[ri]!;
         const flatIdx = vs.globalStart + ri;
@@ -334,9 +300,7 @@ export function Top() {
         const ss = sourceStyle(r.source);
 
         const { main, tags } = splitName(r.name);
-
         const dateText = r.added ? formatTopDate(r.added) : "–".padEnd(DATE_W);
-
         const seeds = r.seeders ?? 0;
         const leechers = r.leechers ?? 0;
 
@@ -348,7 +312,8 @@ export function Top() {
             <Box width={DATE_W} flexShrink={0} justifyContent="flex-end">
               <Text dimColor={!here} color={here ? COLOR.accent : undefined}>{dateText}</Text>
             </Box>
-            <Box flexGrow={1} minWidth={0} marginLeft={1}>
+            <Box width={GAP} flexShrink={0} />
+            <Box flexGrow={1} minWidth={0}>
               <Text
                 wrap="truncate-end"
                 color={here ? COLOR.accent : COLOR.text}
@@ -365,12 +330,12 @@ export function Top() {
             </Box>
             {showStats ? (
               <>
-                <Box width={SIZE_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
+                <Box width={SIZE_W} flexShrink={0} justifyContent="flex-end">
                   <Text dimColor={!here} color={here ? COLOR.accent : undefined}>
                     {r.sizeBytes > 0 ? formatBytes(r.sizeBytes) : "–"}
                   </Text>
                 </Box>
-                <Box width={HEALTH_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
+                <Box width={HEALTH_W} flexShrink={0} justifyContent="flex-end">
                   {seeds + leechers > 0 ? (
                     <Text>
                       <Text color={here ? COLOR.accent : seedColor(seeds)}>{`▲${seeds}`}</Text>
@@ -380,10 +345,9 @@ export function Top() {
                 </Box>
               </>
             ) : null}
-            <Box width={SRC_W} flexShrink={0} marginLeft={1} justifyContent="flex-end">
+            <Box width={SRC_W} flexShrink={0} justifyContent="flex-end">
               <Text color={here ? COLOR.accent : ss.color} dimColor={!here}>{ss.tag}</Text>
             </Box>
-            {/* scrollbar character for this line */}
             <Box width={1} flexShrink={0}>
               <Text dimColor>{scrollChars[lineIdx] ?? "░"}</Text>
             </Box>
