@@ -15,7 +15,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - run: cp logo.png landing/
+      - run: |
+          cp logo.png landing/
+          cp scripts/setup.sh landing/
+          cp scripts/setup.bat landing/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: landing

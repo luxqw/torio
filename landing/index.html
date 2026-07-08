@@ -709,7 +709,10 @@
                                 <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-brand-neon"></span>
                                 <span class="text-[9px] sm:text-xs text-gray-600 dark:text-gray-400 font-semibold">terminal ~ setup.sh</span>
                             </div>
-                            <span class="text-[8px] sm:text-[10px] text-gray-600">bash/zsh</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[8px] sm:text-[10px] text-gray-600">bash/zsh</span>
+                                <button onclick="copySetupScript()" class="text-[8px] sm:text-[10px] px-2 py-0.5 rounded border border-gray-500/30 text-gray-500 hover:text-brand-neon hover:border-brand-500/40 transition-all" title="Скопировать скрипт установки">📋</button>
+                            </div>
                         </div>
 
                         <!-- Код и шаги установки -->
@@ -731,6 +734,20 @@
                                 <div class="text-gray-200 mt-1">$ torio</div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Кнопки скачивания скриптов -->
+                    <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+                        <a href="setup.sh" download class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-[11px] font-mono font-medium text-gray-700 dark:text-gray-300 hover:border-brand-500/40 hover:text-brand-neon transition-all bg-white dark:bg-gray-900">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            setup.sh
+                            <span class="text-[9px] text-gray-400">Linux / macOS</span>
+                        </a>
+                        <a href="setup.bat" download class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-[11px] font-mono font-medium text-gray-700 dark:text-gray-300 hover:border-brand-500/40 hover:text-brand-neon transition-all bg-white dark:bg-gray-900">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            setup.bat
+                            <span class="text-[9px] text-gray-400">Windows</span>
+                        </a>
                     </div>
                 </div>
 
@@ -908,15 +925,41 @@
         // === Копирование в буфер обмена ===
         function copyToClipboard(elementId) {
             const copyText = document.getElementById(elementId);
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-
-            try {
-                document.execCommand('copy');
-                showToast("Команда установки скопирована!", "success");
-            } catch (err) {
-                showToast("Не удалось скопировать команду автоматически.", "error");
+            const text = copyText.value || copyText.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Команда скопирована!", "success");
+            }).catch(() => {
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                try {
+                    document.execCommand('copy');
+                    showToast("Команда скопирована!", "success");
+                } catch {
+                    showToast("Не удалось скопировать команду.", "error");
+                }
+            });
+            if (copyText instanceof HTMLInputElement) {
+                copyText.blur();
             }
+            window.getSelection().removeAllRanges();
+        }
+
+        // === Копирование скрипта установки ===
+        function copySetupScript() {
+            const script = `# 1. Проверить версию Node.js
+node -v
+
+# 2. Быстрый локальный старт
+npx torio-cli
+
+# 3. Глобальная установка
+npm install -g torio-cli
+torio`;
+            navigator.clipboard.writeText(script).then(() => {
+                showToast("Скрипт установки скопирован!", "success");
+            }).catch(() => {
+                showToast("Не удалось скопировать.", "error");
+            });
         }
 
         // === Тосты (Вместо вредных браузерных alert) ===
@@ -926,14 +969,14 @@
             
             let bgClass = "bg-gray-900 dark:bg-gray-900 border-gray-800 dark:border-gray-800 text-white";
             if (type === "success") {
-                bgClass = "bg-green-100 dark:bg-brand-900/90 text-green-900 dark:text-brand-neon border-green-300 dark:border-brand-500/50";
+                bgClass = "bg-green-600 dark:bg-green-700 text-white border-green-500 dark:border-green-600";
             } else if (type === "error") {
-                bgClass = "bg-red-100 dark:bg-red-950/90 text-red-900 dark:text-red-400 border-red-300 dark:border-red-500/50";
+                bgClass = "bg-red-600 dark:bg-red-800 text-white border-red-500 dark:border-red-700";
             } else if (type === "info") {
-                bgClass = "bg-blue-100 dark:bg-gray-900 text-blue-900 dark:text-gray-300 border-blue-300 dark:border-gray-700";
+                bgClass = "bg-gray-800 dark:bg-gray-800 text-white border-gray-700 dark:border-gray-700";
             }
 
-            toast.className = `flex items-center gap-2.5 px-4.5 py-3 rounded-xl border text-xs font-mono font-semibold shadow-2xl pointer-events-auto transition-all duration-300 translate-x-12 opacity-0 ${bgClass}`;
+            toast.className = `flex items-center gap-3 px-5 py-3.5 rounded-xl border text-xs font-mono font-semibold shadow-2xl pointer-events-auto transition-all duration-300 translate-x-12 opacity-0 ${bgClass}`;
             toast.innerHTML = `
                 <span class="text-brand-neon">⚡</span>
                 <span>${message}</span>
