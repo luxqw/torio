@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,9 +111,6 @@
             background-image: radial-gradient(rgba(255, 143, 64, 0.08) 1.2px, transparent 1.2px);
             background-size: 28px 28px;
         }
-        .light .grid-bg {
-            background-image: radial-gradient(rgba(255, 143, 64, 0.05) 1.2px, transparent 1.2px);
-        }
         .glow-accent {
             box-shadow: 0 0 50px -12px rgba(255, 143, 64, 0.35);
         }
@@ -129,9 +126,6 @@
         }
         ::-webkit-scrollbar-track {
             background: #0f0f0f;
-        }
-        .light ::-webkit-scrollbar-track {
-            background: #f3f4f6;
         }
         ::-webkit-scrollbar-thumb {
             background: #ff8f40;
@@ -283,46 +277,26 @@
             color: #ff8f40;
         }
         
-        /* LIGHT MODE STYLES */
         body {
-            background-color: #ffffff;
-            color: #1f2937;
-        }
-        body nav {
-            background-color: rgba(249, 250, 251, 0.95);
-            border-color: rgba(229, 231, 235, 0.5);
-        }
-        body a {
-            color: #374151;
-        }
-        body a:hover {
-            color: #ff8f40;
-        }
-        body button {
-            color: #374151;
-        }
-        
-        /* DARK MODE STYLES */
-        .dark body {
             background-color: #0f0f0f;
             color: #bfbdb6;
         }
-        .dark nav {
+        nav {
             background-color: rgba(15, 15, 15, 0.95);
             border-color: rgba(90, 99, 120, 0.2);
         }
-        .dark a {
+        a {
             color: #bfbdb6;
         }
-        .dark a:hover {
+        a:hover {
             color: #ff8f40;
         }
-        .dark button {
+        button {
             color: #bfbdb6;
         }
     </style>
 </head>
-<body class="bg-white dark:bg-[#0f0f0f] text-gray-900 dark:text-ayuText font-sans antialiased transition-colors duration-300 grid-bg">
+<body class="bg-[#0f0f0f] text-ayuText font-sans antialiased transition-colors duration-300 grid-bg">
 
     <!-- Тосты/Уведомления -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -349,16 +323,8 @@
                     <a href="#install" class="hover:text-brand-neon transition-colors">Установка</a>
                 </div>
 
-                <!-- Правая часть: Переключатель тем, GitHub, NPM -->
+                <!-- Правая часть: GitHub, NPM -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Theme Toggle -->
-                    <button id="theme-btn" class="p-2 rounded-lg border border-gray-300 dark:border-ayuAlt/30 hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white" aria-label="Смена темы">
-                        <!-- Sun Icon -->
-                        <svg id="sun-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"/></svg>
-                        <!-- Moon Icon -->
-                        <svg id="moon-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    </button>
-
                     <!-- GitHub Button -->
                     <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all flex-shrink-0 border border-gray-300 dark:border-gray-700">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
@@ -387,7 +353,7 @@
                     <a href="#keys" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Горячие клавиши</a>
                     <a href="#install" class="px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-ayuText hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">Установка</a>
                     <div class="flex items-center gap-2 px-3 py-2 border-t border-gray-200 dark:border-ayuAlt/20 mt-2 pt-2">
-                        <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all">
+                        <a href="https://github.com/y-tretyakov/torio" target="_blank" rel="noopener noreferrer" class="flex-1 flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold bg-white dark:bg-transparent text-gray-950 dark:text-ayuText hover:bg-gray-100 dark:hover:bg-ayuAlt/10 transition-all">
                             <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
                             GitHub
                         </a>
@@ -974,51 +940,6 @@
                 }
             }
         );
-
-        // === Initialize Theme on Page Load ===
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeBtn = document.getElementById('theme-btn');
-            const sunIcon = document.getElementById('sun-icon');
-            const moonIcon = document.getElementById('moon-icon');
-            const htmlElement = document.documentElement;
-            
-            // Initialize theme from localStorage or system preference
-            function initTheme() {
-                const savedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
-                
-                if (isDark) {
-                    htmlElement.classList.add('dark');
-                    sunIcon.classList.add('hidden');
-                    moonIcon.classList.remove('hidden');
-                } else {
-                    htmlElement.classList.remove('dark');
-                    sunIcon.classList.remove('hidden');
-                    moonIcon.classList.add('hidden');
-                }
-            }
-            
-            // Initialize on load
-            initTheme();
-            
-            // Handle theme button clicks
-            themeBtn.addEventListener('click', () => {
-                if (htmlElement.classList.contains('dark')) {
-                    htmlElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                    sunIcon.classList.remove('hidden');
-                    moonIcon.classList.add('hidden');
-                    showToast("Включена светлая тема", "info");
-                } else {
-                    htmlElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                    sunIcon.classList.add('hidden');
-                    moonIcon.classList.remove('hidden');
-                    showToast("Включена темная тема", "info");
-                }
-            });
-        });
 
         // === Mobile Menu Toggle ===
         document.addEventListener('DOMContentLoaded', function() {
