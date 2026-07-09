@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           cp logo.png landing/
+          cp logo.webp landing/
           cp scripts/setup.sh landing/
           cp scripts/setup.bat landing/
       - uses: actions/upload-pages-artifact@v3
