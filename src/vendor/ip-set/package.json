@@ -1,0 +1,13 @@
+{
+  "name": "ip-set",
+  "private": true,
+  "description": "Efficient mutable set for IP addresses — vendored to bypass hostile preinstall script (npx only-allow pnpm)",
+  "author": "Travis Fischer <fisch0920@gmail.com>",
+  "homepage": "http://webtorrent.io",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "index.js",
+  "dependencies": {
+    "ip-address": "^10.0.1"
+  }
+}
