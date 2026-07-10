@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "preview"
+    "preview",
+    "vendor/ip-set"
   ],
   "engines": {
     "node": ">=22"
@@ -58,12 +59,10 @@
   "dependencies": {
     "env-paths": "^4.0.0",
     "ink": "^7.0.5",
+    "ip-set": "file:vendor/ip-set",
     "parse-torrent": "^11.0.21",
     "react": "^19.2.7",
     "webtorrent": "^2.4.1"
-  },
-  "overrides": {
-    "ip-set": "file:src/vendor/ip-set"
   },
   "devDependencies": {
     "@types/node": "^25.9.2",

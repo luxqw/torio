@@ -21,7 +21,7 @@ npm run dev
 
 ### Vendored dependencies
 
-**ip-set** (`src/vendor/ip-set/`) is vendored because the upstream `ip-set@3.0.0` package contains a hostile `preinstall` script (`npx only-allow pnpm`) that crashes `npm install`. The package is a transitive dependency of WebTorrent (via `load-ip-set`) and is only used when `blocklist` is passed to the WebTorrent client — which torio does not do. Vendoring lets us strip the preinstall script while keeping the dependency tree satisfied. Track upstream at [transitive-bullshit/ip-set#15](https://github.com/transitive-bullshit/ip-set/issues/15).
+**ip-set** (`vendor/ip-set/`) is vendored because the upstream `ip-set@3.0.0` package contains a hostile `preinstall` script (`npx only-allow pnpm`) that crashes `npm install`. The package is a transitive dependency of WebTorrent (via `load-ip-set`) and is only used when `blocklist` is passed to the WebTorrent client — which torio does not do. Vendoring lets us strip the preinstall script while keeping the dependency tree satisfied. Track upstream at [transitive-bullshit/ip-set#15](https://github.com/transitive-bullshit/ip-set/issues/15).
 
 ## Before you open a PR
 
