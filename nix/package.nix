@@ -31,7 +31,7 @@ buildNpmPackage (finalAttrs: {
   # Must be regenerated whenever package-lock.json changes: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-mQBy7yoU18hZ9ZSk5xMrbewg9PMMKr4PWOJKV2hkmY4=";
+  npmDepsHash = "sha256-mfGpXTvEaJNb18cLbxGtQ1KIthESlUH5VLRF5Z44r+g=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
@@ -60,19 +60,6 @@ buildNpmPackage (finalAttrs: {
             xclip
           ]
         }
-
-    # The "ip-set" override (package.json overrides -> file:src/vendor/ip-set)
-    # resolves to a dangling symlink once hoisted under webtorrent's nested
-    # load-ip-set — reproduces with plain `npm ci` too, nothing Nix-specific.
-    # ip-set is only dereferenced when a blocklist is passed to WebTorrent,
-    # which torio never does, so it's harmless at runtime, but Nix's
-    # noBrokenSymlinks check still fails the build on it. Swap the dangling
-    # symlink for the real vendored copy.
-    ip_set_link="$out/lib/node_modules/${finalAttrs.pname}/node_modules/ip-set"
-    if [ -L "$ip_set_link" ] && [ ! -e "$ip_set_link" ]; then
-      rm "$ip_set_link"
-      cp -r ${finalAttrs.src}/src/vendor/ip-set "$ip_set_link"
-    fi
   '';
 
   meta = {
