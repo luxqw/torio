@@ -74,6 +74,44 @@ npm update -g torio-cli
 npm install -g torio-cli@latest
 ```
 
+### Nix / NixOS
+
+torio поставляется с flake. Можно попробовать без установки:
+
+```sh
+nix run github:y-tretyakov/torio
+```
+
+Или установить в профиль:
+
+```sh
+nix profile install github:y-tretyakov/torio
+```
+
+Чтобы подключить как input в своём flake (например, в конфигурации NixOS):
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    torio = {
+      url = "github:y-tretyakov/torio";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+Затем в конфигурации:
+
+```nix
+environment.systemPackages = [
+  inputs.torio.packages.${pkgs.system}.default
+];
+```
+
+Подробности — в [nix/README.md](nix/README.md).
+
 <p align="center">
   <img src="preview/04_selected-result.png" alt="Выбранный результат в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>

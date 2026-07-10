@@ -11,7 +11,7 @@ None of them were big. All of them fit the grain. That's the whole idea.
 ## Set up
 
 ```sh
-git clone https://github.com/baairon/torlink
+git clone https://github.com/y-tretyakov/torio
 cd torio
 npm install
 npm run dev
