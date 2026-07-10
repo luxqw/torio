@@ -1,6 +1,6 @@
 {
   "name": "torio-cli",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
   "type": "module",
   "bin": {
