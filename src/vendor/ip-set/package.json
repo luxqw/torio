@@ -1,7 +1,7 @@
 {
   "name": "ip-set",
-  "description": "Efficient mutable set for IP addresses",
-  "version": "3.0.0",
+  "private": true,
+  "description": "Efficient mutable set for IP addresses — vendored to bypass hostile preinstall script (npx only-allow pnpm)",
   "author": "Travis Fischer <fisch0920@gmail.com>",
   "homepage": "http://webtorrent.io",
   "license": "MIT",
