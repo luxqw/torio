@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "preview"
+    "preview",
+    "vendor/ip-set"
   ],
   "engines": {
     "node": ">=22"
@@ -63,7 +64,7 @@
     "webtorrent": "^2.4.1"
   },
   "overrides": {
-    "ip-set": "file:src/vendor/ip-set"
+    "ip-set": "file:vendor/ip-set"
   },
   "devDependencies": {
     "@types/node": "^25.9.2",
