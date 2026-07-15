@@ -1,3 +1,10 @@
+## [1.5.6](https://github.com/luxqw/torio/compare/v1.5.5...v1.5.6) (2026-07-15)
+
+
+### Bug Fixes
+
+* sidebar Enter/-> stuck on Top view instead of switching to it ([30981d1](https://github.com/luxqw/torio/commit/30981d1d577498ff04c79945b0c4ee1c2d5013f0))
+
 ## [1.5.5](https://github.com/luxqw/torio/compare/v1.5.4...v1.5.5) (2026-07-15)
 
 
