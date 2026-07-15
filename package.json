@@ -1,10 +1,10 @@
 {
-  "name": "torio-cli",
+  "name": "torio",
   "version": "1.5.0",
   "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
   "type": "module",
   "bin": {
-    "torio": "./dist/cli.cjs"
+    "torio": "dist/cli.cjs"
   },
   "files": [
     "dist",

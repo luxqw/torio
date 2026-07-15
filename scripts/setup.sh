@@ -12,8 +12,8 @@ fi
 echo "Node.js: $(node -v)"
 
 # 2. Глобальная установка
-echo "Устанавливаю torio-cli..."
-npm install -g torio-cli
+echo "Устанавливаю torio..."
+npm install -g torio
 
 echo ""
 echo "Готово! Запустите: torio"

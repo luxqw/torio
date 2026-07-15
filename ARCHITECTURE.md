@@ -2,7 +2,7 @@
 
 ## Обзор
 
-**torio-cli** — TUI-клиент для поиска и скачивания торрентов, построенный на React/Ink и WebTorrent. Работает полностью в терминале, не требует браузера или GUI.
+**torio** — TUI-клиент для поиска и скачивания торрентов, построенный на React/Ink и WebTorrent. Работает полностью в терминале, не требует браузера или GUI.
 
 ```
 Пользователь → CLI аргументы → React/Ink TUI → DownloadQueue → TorrentEngine → WebTorrent
@@ -90,8 +90,10 @@ torio/
 │   ├── verify-seeding.ts         # E2E-тест сидирования
 │   ├── setup.sh / setup.bat      # Скрипты установки
 ├── .github/workflows/
+│   ├── ci.yml                    # typecheck + test (ubuntu/macos/windows)
+│   ├── nix.yml                   # Nix build/flake check (4 платформы)
 │   ├── pages.yml                 # Деплой лендинга на GitHub Pages
-│   └── publish.yml               # Публикация в npm/GitHub Packages
+│   └── release.yml               # semantic-release: версия, CHANGELOG, npm, GitHub Release
 ├── nix/package.nix               # Сборка Nix
 ├── package.json
 ├── tsup.config.ts                # Бандлер (ESM, node22, minify)

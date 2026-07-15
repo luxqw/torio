@@ -333,7 +333,7 @@
                     </a>
 
                     <!-- NPM Button -->
-                    <a href="https://www.npmjs.com/package/torio-cli" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all flex-shrink-0 border border-gray-300 dark:border-gray-700">
+                    <a href="https://www.npmjs.com/package/torio" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all flex-shrink-0 border border-gray-300 dark:border-gray-700">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-4.464l.01-9.383H9.593l.009 9.375H5.131z"/></svg>
                         NPM
                     </a>
@@ -403,7 +403,7 @@
             <div class="mt-10 lg:mt-16 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
                 <div class="relative flex items-center bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-2xl p-1 pl-3 sm:pl-4 pr-1.5 sm:pr-2 w-full sm:w-auto max-w-md transition-all hover:border-brand-500/40">
                     <span class="text-brand-neon font-mono text-xs sm:text-sm mr-1.5 sm:mr-2 select-none">$</span>
-                    <input type="text" id="npm-cmd" readonly value="npm i -g torio-cli" class="bg-transparent font-mono text-xs sm:text-sm text-gray-100 outline-none flex-1 sm:w-44 select-all min-w-0">
+                    <input type="text" id="npm-cmd" readonly value="npm i -g torio" class="bg-transparent font-mono text-xs sm:text-sm text-gray-100 outline-none flex-1 sm:w-44 select-all min-w-0">
                     <button onclick="copyToClipboard('npm-cmd')" class="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-gray-200 px-2 sm:px-3.5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-semibold transition-all flex-shrink-0 whitespace-nowrap">
                         <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                         <span class="hidden sm:inline">Копировать</span>
@@ -758,12 +758,12 @@
                             </div>
                             <div class="border-t border-gray-800/80 pt-2 sm:pt-3">
                                 <span class="text-gray-500"># 2. Быстрый локальный старт</span>
-                                <div class="text-gray-200 mt-1">$ npx torio-cli</div>
+                                <div class="text-gray-200 mt-1">$ npx torio</div>
                                 <div class="text-gray-400">Инициализация реестра... запуск...</div>
                             </div>
                             <div class="border-t border-gray-800/80 pt-2 sm:pt-3">
                                 <span class="text-gray-500"># 3. Глобальная установка и запуск по короткой команде</span>
-                                <div class="text-gray-200 mt-1">$ npm install -g torio-cli</div>
+                                <div class="text-gray-200 mt-1">$ npm install -g torio</div>
                                 <div class="text-brand-neon">✔ Added 1 package in 0.94s</div>
                                 <div class="text-gray-200 mt-1">$ torio</div>
                             </div>
@@ -865,7 +865,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.npmjs.com/package/torio-cli" target="_blank" rel="noopener noreferrer" class="hover:text-brand-neon transition-colors flex items-center gap-1.5">
+                            <a href="https://www.npmjs.com/package/torio" target="_blank" rel="noopener noreferrer" class="hover:text-brand-neon transition-colors flex items-center gap-1.5">
                                 <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-4.464l.01-9.383H9.593l.009 9.375H5.131z"/></svg>
                                 NPM Registry
                             </a>
@@ -883,7 +883,7 @@
                 <div class="md:col-span-5">
                     <h4 class="font-semibold text-gray-300 mb-3 uppercase tracking-wider text-[10px] text-red-500/80">Отказ от ответственности</h4>
                     <p class="text-[11px] text-gray-500 leading-relaxed border-l-2 border-red-500/30 pl-3">
-                        Программное обеспечение «torio» (включая CLI утилиту torio-cli) предоставляется на условиях свободной лицензии MIT «как есть», без каких-либо явных или подразумеваемых гарантий. Программа является исключительно поисковым и связующим децентрализованным терминальным интерфейсом к сторонним BitTorrent-сетям. 
+                        Программное обеспечение «torio» (включая CLI утилиту torio) предоставляется на условиях свободной лицензии MIT «как есть», без каких-либо явных или подразумеваемых гарантий. Программа является исключительно поисковым и связующим децентрализованным терминальным интерфейсом к сторонним BitTorrent-сетям. 
                         Разработчик не хранит, не размещает, не модерирует и не передает данные на собственных серверах — обмен идет напрямую между P2P узлами (пирами). Любое использование утилиты для скачивания или раздачи материалов должно осуществляться в строгом соответствии с действующим законодательством вашей юрисдикции. Автор не несет ответственности за возможные нарушения авторских прав со стороны третьих лиц при использовании данного инструмента.
                     </p>
                 </div>
@@ -990,10 +990,10 @@
 node -v
 
 # 2. Быстрый локальный старт
-npx torio-cli
+npx torio
 
 # 3. Глобальная установка
-npm install -g torio-cli
+npm install -g torio
 torio`;
             navigator.clipboard.writeText(script).then(() => {
                 showToast("Скрипт установки скопирован!", "success");
