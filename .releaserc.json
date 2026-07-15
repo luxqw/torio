@@ -6,9 +6,13 @@
     ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
     "@semantic-release/npm",
     [
+      "@semantic-release/exec",
+      { "prepareCmd": "bash scripts/update-nix-hash.sh" }
+    ],
+    [
       "@semantic-release/git",
       {
-        "assets": ["package.json", "package-lock.json", "CHANGELOG.md"],
+        "assets": ["package.json", "package-lock.json", "CHANGELOG.md", "nix/package.nix"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],

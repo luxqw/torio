@@ -27,3 +27,43 @@ jobs:
       - run: npm run typecheck
 
       - run: npm test
+
+  release:
+    needs: test
+    if: github.repository == 'luxqw/torio' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - run: npm ci
+
+      # Determines the next version from Conventional Commits since the last
+      # release, updates package.json/CHANGELOG.md/nix/package.nix's
+      # npmDepsHash, commits them back with [skip ci], tags, publishes to
+      # npm, and creates the GitHub Release. No-op if nothing since the
+      # last release warrants one. Only runs after `test` is green on all
+      # three OSes, so a broken cross-platform build never gets released.
+      - name: Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

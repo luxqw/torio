@@ -50,10 +50,11 @@ buildNpmPackage (finalAttrs: {
   src = ../.;
 
   nodejs = nodejs_22;
-  # Must be regenerated whenever package-lock.json changes: run
+  # Kept in sync automatically by scripts/update-nix-hash.sh, run as part of
+  # the release pipeline (see .releaserc.json). For a manual bump: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-qIUs8ioK98JW4aRKwegN/2D1/E9UiAtaewURLE0hq7E=";
+  npmDepsHash = "sha256-GFb0xmsWEg0lqSaqTJ+7nv7Q8H8cNnOKXctMNBfiad0=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
