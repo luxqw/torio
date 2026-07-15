@@ -1,3 +1,10 @@
+## [1.5.4](https://github.com/luxqw/torio/compare/v1.5.3...v1.5.4) (2026-07-15)
+
+
+### Bug Fixes
+
+* **nix:** refresh npmDepsHash for v1.5.3 lockfile ([7b5ce9b](https://github.com/luxqw/torio/commit/7b5ce9b7a2345164bccc0bc6606394d3bce237e3))
+
 ## [1.5.3](https://github.com/luxqw/torio/compare/v1.5.2...v1.5.3) (2026-07-15)
 
 
