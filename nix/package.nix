@@ -36,8 +36,8 @@ buildNpmPackage (finalAttrs: {
   npmFlags = [ "--ignore-scripts" ];
 
   # node-datachannel binary tarball. Version/hash must track the
-  # node-datachannel resolution in pnpm-lock.yaml/package-lock.json — bump
-  # both together when dependencies update.
+  # node-datachannel resolution in package-lock.json — bump both together
+  # when dependencies update.
   nodeDatachannelPrebuilt = fetchurl {
     url = "https://github.com/murat-dogan/node-datachannel/releases/download/v0.32.3/node-datachannel-v0.32.3-napi-v8-linux-x64.tar.gz";
     sha256 = "4092afc9cd594a3326eb1bd823da452b227b742ea8222689b2cea6f7344cf67a";
@@ -64,8 +64,8 @@ buildNpmPackage (finalAttrs: {
 
   meta = {
     description = "torio is a torrent finder that lives in your terminal, with zero setup and nothing to configure.";
-    homepage = "https://github.com/y-tretyakov/torio";
-    changelog = "https://github.com/y-tretyakov/torio/releases/tag/v${finalAttrs.version}";
+    homepage = "https://github.com/luxqw/torio";
+    changelog = "https://github.com/luxqw/torio/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     mainProgram = "torio";
     platforms = lib.platforms.linux;

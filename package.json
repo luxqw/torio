@@ -47,11 +47,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/y-tretyakov/torio.git"
+    "url": "git+https://github.com/luxqw/torio.git"
   },
-  "homepage": "https://github.com/y-tretyakov/torio#readme",
+  "homepage": "https://github.com/luxqw/torio#readme",
   "bugs": {
-    "url": "https://github.com/y-tretyakov/torio/issues"
+    "url": "https://github.com/luxqw/torio/issues"
   },
   "publishConfig": {
     "access": "public"

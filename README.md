@@ -1,7 +1,7 @@
 # torio
 
 [![npm](https://img.shields.io/npm/v/torio-cli)](https://www.npmjs.com/package/torio-cli)
-[![GitHub](https://img.shields.io/github/license/y-tretyakov/torio)](https://github.com/y-tretyakov/torio)
+[![GitHub](https://img.shields.io/github/license/luxqw/torio)](https://github.com/luxqw/torio)
 
 torio — это быстрый и бесшовный способ искать торрент-материалы прямо из терминала и сразу скачивать их без лишних шагов.
 
@@ -79,13 +79,13 @@ npm install -g torio-cli@latest
 torio поставляется с flake. Можно попробовать без установки:
 
 ```sh
-nix run github:y-tretyakov/torio
+nix run github:luxqw/torio
 ```
 
 Или установить в профиль:
 
 ```sh
-nix profile install github:y-tretyakov/torio
+nix profile install github:luxqw/torio
 ```
 
 Чтобы подключить как input в своём flake (например, в конфигурации NixOS):
@@ -95,7 +95,7 @@ nix profile install github:y-tretyakov/torio
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     torio = {
-      url = "github:y-tretyakov/torio";
+      url = "github:luxqw/torio";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -150,7 +150,7 @@ torio собирает результаты из нескольких источ
 1. Склонируйте репозиторий:
 
    ```sh
-   git clone https://github.com/y-tretyakov/torio.git
+   git clone https://github.com/luxqw/torio.git
    cd torio
    ```
 

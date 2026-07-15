@@ -6,7 +6,7 @@ Add this repo to your ```flake.nix```. The package is built using the unstable c
 ```nix
 inputs = {
   ...
-  torio.url = "github:y-tretyakov/torio";
+  torio.url = "github:luxqw/torio";
   ...
 }
 ```
