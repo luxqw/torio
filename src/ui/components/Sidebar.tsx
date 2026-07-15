@@ -31,18 +31,22 @@ export const RAIL_WIDTH =
   GUTTER + Math.max(...NAV.map((n) => 3 + n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
 
 export function Sidebar() {
-  const { section, setSection, region, setRegion, queue } = useStore();
+  const { sidebarSection, setSidebarSection, setSection, region, setRegion, queue } = useStore();
   const focused = region === "sidebar";
-  const idx = Math.max(0, NAV.findIndex((n) => n.key === section));
+  const idx = Math.max(0, NAV.findIndex((n) => n.key === sidebarSection));
   useQueueItems(queue);
   const active = queue.activeCount;
   const seeding = queue.seedingCount;
 
   useInput(
     (input, key) => {
-      if (key.upArrow || input === "k") setSection(NAV[wrapStep(idx, -1, NAV.length)]!.key);
-      else if (key.downArrow || input === "j") setSection(NAV[wrapStep(idx, 1, NAV.length)]!.key);
-      else if (key.return) setRegion("content");
+      if (key.upArrow || input === "k") setSidebarSection(NAV[wrapStep(idx, -1, NAV.length)]!.key);
+      else if (key.downArrow || input === "j")
+        setSidebarSection(NAV[wrapStep(idx, 1, NAV.length)]!.key);
+      else if (key.return) {
+        setSection(sidebarSection);
+        setRegion("content");
+      }
     },
     { isActive: focused },
   );
@@ -52,7 +56,7 @@ export function Sidebar() {
       {GROUPS.map((items, gi) => (
         <Box key={gi} flexDirection="column" marginTop={gi > 0 ? 1 : 0}>
           {items.map((item) => {
-            const selected = item.key === section;
+            const selected = item.key === sidebarSection;
             return (
               <Box key={item.key}>
                 <Box width={GUTTER} flexShrink={0}>

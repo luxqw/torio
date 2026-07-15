@@ -88,6 +88,8 @@ function makeStore(
     submitQuery: noop,
     section: "all",
     setSection: noop,
+    sidebarSection: "all",
+    setSidebarSection: noop,
     region: "content",
     setRegion: noop,
     captureMode: "none",

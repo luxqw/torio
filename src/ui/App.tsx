@@ -80,6 +80,7 @@ export function App({
   const [view, setView] = useState<View>("splash");
   const [query, setQuery] = useState("");
   const [section, setSection] = useState<Section>("all");
+  const [sidebarSection, setSidebarSection] = useState<Section>("all");
   const [region, setRegion] = useState<Region>("content");
   const [captureMode, setCaptureMode] = useState<CaptureMode>("none");
   const [downloadFocus, setDownloadFocus] = useState<DownloadFocus | null>(null);
@@ -308,6 +309,8 @@ export function App({
       submitQuery,
       section,
       setSection,
+      sidebarSection,
+      setSidebarSection,
       region: showHelp || editingFolder || editingTrackers ? "help" : region,
       setRegion,
       captureMode,
@@ -334,6 +337,7 @@ export function App({
     query,
     submitQuery,
     section,
+    sidebarSection,
     region,
     showHelp,
     editingFolder,
@@ -388,20 +392,33 @@ export function App({
         return;
       }
       if (key.tab) {
-        setRegion(region === "sidebar" ? "content" : "sidebar");
+        if (region === "sidebar") {
+          setSection(sidebarSection);
+          setRegion("content");
+        } else {
+          setSidebarSection(section);
+          setRegion("sidebar");
+        }
         return;
       }
       if (key.rightArrow || input === "l") {
-        if (region === "sidebar") setRegion("content");
+        if (region === "sidebar") {
+          setSection(sidebarSection);
+          setRegion("content");
+        }
         return;
       }
       if (key.leftArrow || input === "h") {
-        if (region === "content") setRegion("sidebar");
+        if (region === "content") {
+          setSidebarSection(section);
+          setRegion("sidebar");
+        }
         return;
       }
       if (key.escape) {
         if (captureMode === "esc") return;
         if (region === "content") {
+          setSidebarSection(section);
           setRegion("sidebar");
           return;
         }

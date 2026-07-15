@@ -39,6 +39,12 @@ export interface Store {
 
   section: Section;
   setSection: (s: Section) => void;
+  // Sidebar's own highlighted row while browsing — separate from `section`
+  // (the actually-displayed content) so arrowing through the sidebar no
+  // longer swaps the content pane on every keystroke; only committed to
+  // `section` when focus actually moves into content (Enter/→).
+  sidebarSection: Section;
+  setSidebarSection: (s: Section) => void;
   region: Region;
   setRegion: (r: Region) => void;
   captureMode: CaptureMode;
