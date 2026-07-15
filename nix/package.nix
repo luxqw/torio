@@ -53,7 +53,7 @@ buildNpmPackage (finalAttrs: {
   # Must be regenerated whenever package-lock.json changes: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-oAgDBml8gAS0cIdyww12NszknlQiiPWricrG6akJB2I=";
+  npmDepsHash = "sha256-qIUs8ioK98JW4aRKwegN/2D1/E9UiAtaewURLE0hq7E=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
