@@ -21,7 +21,19 @@ on:
 
 jobs:
   flake:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runs-on: ubuntu-latest
+          - system: aarch64-linux
+            runs-on: ubuntu-24.04-arm
+          - system: x86_64-darwin
+            runs-on: macos-13
+          - system: aarch64-darwin
+            runs-on: macos-14
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +47,7 @@ jobs:
         run: nix flake check --print-build-logs
 
       - name: build
-        run: nix build .#default --print-build-logs
+        run: nix build ".#packages.${{ matrix.system }}.default" --print-build-logs
 
       - name: smoke test
         run: ./result/bin/torio --help

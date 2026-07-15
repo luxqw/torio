@@ -39,6 +39,10 @@ Verify with `typecheck && test` before opening a PR.
 - **Adding a Store field**: also add a matching noop entry in `scripts/render-previews-impl.tsx` or `npm run previews` breaks
 - **`resultsPanelOuter`**: the results panel height is intentionally 1 row short of its container to avoid an Ink render desync bug (issue #21)
 
+## Known accepted risk
+
+`npm audit` flags `ip@2.0.1` (transitive via `webtorrent → torrent-discovery → bittorrent-tracker`, an SSRF miscategorization in `isPublic`, GHSA-2p57-rm9w-gvfp) as high severity. No patched `ip` release exists upstream (unmaintained since 2024-02) and `npm audit fix --force` only offers a downgrade to `webtorrent@0.7.3`, which is not viable. Accepted as-is: torio already talks to untrusted, user-supplied trackers by design, so this doesn't introduce a new trust boundary. Re-check when bumping `webtorrent`/`bittorrent-tracker`.
+
 ## Source provider quirks
 
 Every source implements `search(query, opts)`. Empty query = "browse" (fresh releases). Providers that lack browse mode break the main screen Enter-without-query flow.

@@ -8,11 +8,11 @@ torio — это быстрый и бесшовный способ искать 
 Никакой сложной настройки, никаких всплывающих окон и лишних вкладок. Введите запрос, выберите результат, и torio всё сделает за вас: проверит несколько источников, покажет размеры и сиды, а затем начнёт загрузку в нужную папку.
 
 <p align="center">
-  <img src="preview/01_main-page.png" alt="Главный экран torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/01_main-page.png" alt="Главный экран torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 <p align="center">
-  <img src="preview/02_last-update.png" alt="Список последних поступлений — свежие релизы со всех источников" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/02_last-update.png" alt="Список последних поступлений — свежие релизы со всех источников" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@ torio — это быстрый и бесшовный способ искать 
 Внутри топа доступна полноценная навигация: стрелки для перемещения, PageUp/PageDown для пролистывания, `d` для скачивания, `y` для копирования магнет-ссылки. Справа от списка отображается скроллбар, показывающий текущую позицию в выборке.
 
 <p align="center">
-  <img src="preview/02.1_top.png" alt="Топ торрентов в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/02.1_top.png" alt="Топ торрентов в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Почему torio
@@ -38,7 +38,7 @@ torio — это быстрый и бесшовный способ искать 
 - Автоматическое продолжение раздачи после окончания скачивания.
 
 <p align="center">
-  <img src="preview/03_search-results.png" alt="Результаты поиска в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/03_search-results.png" alt="Результаты поиска в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Как использовать
@@ -113,7 +113,7 @@ environment.systemPackages = [
 Подробности — в [nix/README.md](nix/README.md).
 
 <p align="center">
-  <img src="preview/04_selected-result.png" alt="Выбранный результат в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/04_selected-result.png" alt="Выбранный результат в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Что происходит во время загрузки
@@ -123,7 +123,7 @@ environment.systemPackages = [
 Загрузка не мешает поиску: можно продолжать искать новые торренты, пока текущие выполняются в фоне. После завершения торренты продолжают раздаваться, если вы не отключили эту функцию вручную.
 
 <p align="center">
-  <img src="preview/05_download.png" alt="Прогресс загрузки в torio" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/05_download.png" alt="Прогресс загрузки в torio" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Поддерживаемые источники
@@ -140,7 +140,7 @@ torio собирает результаты из нескольких источ
 Если один источник недоступен, torio просто продолжает поиск без него и сообщает об этом.
 
 <p align="center">
-  <img src="preview/06_key-map.png" alt="Карта навигации и горячие клавиши" style="max-width: 960px; width: 100%; height: auto;">
+  <img src="https://raw.githubusercontent.com/luxqw/torio/main/preview/06_key-map.png" alt="Карта навигации и горячие клавиши" style="max-width: 960px; width: 100%; height: auto;">
 </p>
 
 ## Разработка
