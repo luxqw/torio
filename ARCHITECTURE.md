@@ -417,7 +417,7 @@ npm run typecheck  # tsc --noEmit, zero errors
 
 ### test
 ```sh
-npm test  # vitest run, 13 файлов, 93 теста
+npm test  # vitest run, 14 файлов, 103 теста
 ```
 
 ---

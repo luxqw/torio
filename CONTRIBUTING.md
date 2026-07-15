@@ -1,6 +1,6 @@
 # Contributing to torio
 
-torio stays small on purpose. The best way in is to read the code you're about to touch, match how it already works, and keep your change tight. Three recent pull requests set the bar, and this guide points back at them throughout:
+torio stays small on purpose. The best way in is to read the code you're about to touch, match how it already works, and keep your change tight. Three pull requests set the bar, and this guide points back at them throughout. They predate the rebrand to torio, so the links go to the upstream repo (`baairon/torlink`) where they were opened — the code they describe is still here today:
 
 - [#4](https://github.com/baairon/torlink/pull/4) gave the arrow keys spatial pane navigation without breaking a single existing shortcut.
 - [#5](https://github.com/baairon/torlink/pull/5) turned a cryptic crash on old Node into a one-line "upgrade me" message.
