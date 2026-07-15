@@ -182,3 +182,5 @@ torio собирает результаты из нескольких источ
 ## Лицензия
 
 Проект распространяется под лицензией MIT. Подробности — в [LICENSE](LICENSE).
+
+torio вырос из [torlink](https://github.com/baairon/torlink) авторства [bairon.dev](https://github.com/baairon).
