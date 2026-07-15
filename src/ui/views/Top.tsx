@@ -119,7 +119,9 @@ function Detail({ r, width }: { r: TorrentResult; width: number }) {
 // ── Component ───────────────────────────────────────
 
 export function Top() {
-  const { startDownload, copyMagnet, setView, setCaptureMode, contentWidth, listRows } = useStore();
+  const { startDownload, copyMagnet, setView, setCaptureMode, contentWidth, listRows, region } =
+    useStore();
+  const focused = region === "content";
 
   const [sections, setSections] = useState<RutorTopSection[]>([]);
   const [loading, setLoading] = useState(true);
@@ -222,6 +224,12 @@ export function Top() {
       if (mode === "detail") { setMode("list"); setDetail(null); return; }
       setView("splash"); return;
     }
+  }, { isActive: true });
+
+  // Gated on `region === "content"` like Results/Downloads/Seeding — without
+  // this, the sidebar's own up/down (region === "sidebar") and this list's
+  // up/down fired on the same keystroke, moving both at once.
+  useInput((input, key) => {
     if (mode === "detail") {
       if (input === "d" && detail) openDownload(detail);
       else if (input === "y" && detail) copyResultMagnet(detail);
@@ -235,7 +243,7 @@ export function Top() {
     else if (key.return) { const r = flatItems[clamped]; if (r) { setDetail(r); setMode("detail"); } }
     else if (input === "d") { const r = flatItems[clamped]; if (r) openDownload(r); }
     else if (input === "y") { const r = flatItems[clamped]; if (r) copyResultMagnet(r); }
-  }, { isActive: true });
+  }, { isActive: focused });
 
   const showStats = useMemo(() => flatItems.some((r) => r.sizeBytes > 0 || r.seeders > 0), [flatItems]);
   const count = totalItems > 0 ? `(${totalItems})` : undefined;
@@ -296,7 +304,7 @@ export function Top() {
       for (let ri = 0; ri < vs.results.length; ri++) {
         const r = vs.results[ri]!;
         const flatIdx = vs.globalStart + ri;
-        const here = flatIdx === clamped;
+        const here = flatIdx === clamped && focused;
         const ss = sourceStyle(r.source);
 
         const { main, tags } = splitName(r.name);
@@ -366,7 +374,7 @@ export function Top() {
       <Panel
         title={mode === "detail" ? "детали" : "🏆 топ"}
         width={contentWidth}
-        focused
+        focused={focused}
         count={mode === "detail" ? undefined : count}
         height={panelOuter}
       >
