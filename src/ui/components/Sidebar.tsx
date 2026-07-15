@@ -31,7 +31,8 @@ export const RAIL_WIDTH =
   GUTTER + Math.max(...NAV.map((n) => 3 + n.label.length + (BADGED(n.key) ? BADGE_W : 0)));
 
 export function Sidebar() {
-  const { sidebarSection, setSidebarSection, setSection, region, setRegion, queue } = useStore();
+  const { sidebarSection, setSidebarSection, setSection, setView, region, setRegion, queue } =
+    useStore();
   const focused = region === "sidebar";
   const idx = Math.max(0, NAV.findIndex((n) => n.key === sidebarSection));
   useQueueItems(queue);
@@ -44,6 +45,7 @@ export function Sidebar() {
       else if (key.downArrow || input === "j")
         setSidebarSection(NAV[wrapStep(idx, 1, NAV.length)]!.key);
       else if (key.return) {
+        setView("browser");
         setSection(sidebarSection);
         setRegion("content");
       }

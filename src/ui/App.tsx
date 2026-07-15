@@ -393,6 +393,7 @@ export function App({
       }
       if (key.tab) {
         if (region === "sidebar") {
+          setView("browser");
           setSection(sidebarSection);
           setRegion("content");
         } else {
@@ -403,6 +404,7 @@ export function App({
       }
       if (key.rightArrow || input === "l") {
         if (region === "sidebar") {
+          setView("browser");
           setSection(sidebarSection);
           setRegion("content");
         }
