@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/luxqw/torio/compare/v1.5.0...v1.5.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* publish as torio instead of torio-cli ([7ed0a4f](https://github.com/luxqw/torio/commit/7ed0a4f6314d1fa7ddcda17e54fd8a9284aad589))
+
 # [1.5.0](https://github.com/luxqw/torio/compare/v1.4.1...v1.5.0) (2026-07-15)
 
 
