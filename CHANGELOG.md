@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/luxqw/torio/compare/v1.5.2...v1.5.3) (2026-07-15)
+
+
+### Bug Fixes
+
+* stop sidebar navigation from swapping the content pane live ([5ed196c](https://github.com/luxqw/torio/commit/5ed196cb1ded55ff27d43d8a34126511072133f1))
+
 ## [1.5.2](https://github.com/luxqw/torio/compare/v1.4.1...v1.5.2) (2026-07-15)
 
 
