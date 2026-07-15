@@ -31,14 +31,6 @@ let
       name = "linux-arm64";
       sha256 = "4bdbd80aeb11fb0a903318defe663a833a1f0af2615450fe10dab75c81723445";
     };
-    x86_64-darwin = {
-      name = "darwin-x64";
-      sha256 = "4f79b7ff0fe035db8d2006842537aca2a2def957569aae6ff578107b56adec38";
-    };
-    aarch64-darwin = {
-      name = "darwin-arm64";
-      sha256 = "69fbffdacb9abda2a76809693443328b6aad71af25947e0733913340365f4da8";
-    };
   };
   nodeDatachannelPlatform =
     nodeDatachannelPlatforms.${stdenv.hostPlatform.system}
@@ -61,7 +53,7 @@ buildNpmPackage (finalAttrs: {
   # Must be regenerated whenever package-lock.json changes: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-SvnSo2yJQUJzZXKgTW3jJfzrpPRFIPV02VxxUhenyu8=";
+  npmDepsHash = "sha256-oAgDBml8gAS0cIdyww12NszknlQiiPWricrG6akJB2I=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
@@ -75,13 +67,10 @@ buildNpmPackage (finalAttrs: {
     node scripts/postbuild.cjs
   '';
 
-  # extract node-datachannel tarball; wl-copy/xclip are Linux-only (Wayland/X11),
-  # macOS already has pbcopy on PATH so no wrapping is needed there.
+  # extract node-datachannel tarball, then add wl-copy/xclip to PATH
   postInstall = ''
     tar -xzf ${finalAttrs.nodeDatachannelPrebuilt} \
       -C $out/lib/node_modules/${npmPackageName}/node_modules/node-datachannel
-  ''
-  + lib.optionalString stdenv.hostPlatform.isLinux ''
     wrapProgram $out/bin/torio \
       --prefix PATH : ${
         lib.makeBinPath [
