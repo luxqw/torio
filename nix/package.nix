@@ -54,7 +54,7 @@ buildNpmPackage (finalAttrs: {
   # the release pipeline (see .releaserc.json). For a manual bump: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-GFb0xmsWEg0lqSaqTJ+7nv7Q8H8cNnOKXctMNBfiad0=";
+  npmDepsHash = "sha256-xUqyNGCIj5v460F4b6mfmiQPYKQGvJ3VB9Sn+mHdVw4=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
