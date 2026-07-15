@@ -1,3 +1,10 @@
+## [1.5.5](https://github.com/luxqw/torio/compare/v1.5.4...v1.5.5) (2026-07-15)
+
+
+### Bug Fixes
+
+* gate Top view navigation on region, like Results/Downloads/Seeding ([e6bf7ff](https://github.com/luxqw/torio/commit/e6bf7ff5bf6bf19f109f4fb4eaa123ad11d86395))
+
 ## [1.5.4](https://github.com/luxqw/torio/compare/v1.5.3...v1.5.4) (2026-07-15)
 
 
