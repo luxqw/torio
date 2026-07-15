@@ -11,6 +11,11 @@
 
 let
   packageJson = builtins.fromJSON (builtins.readFile ../package.json);
+  # packageJson.name is the scoped npm name ("@luxqw/torio") — that's what
+  # npm actually installs under $out/lib/node_modules/, but "@" and "/" are
+  # not valid in a Nix pname/store path, so the derivation itself uses a
+  # separate, Nix-safe identifier.
+  npmPackageName = packageJson.name;
 
   # node-datachannel ships one prebuilt binary per platform; Nix builds run
   # with --ignore-scripts + no network, so the package's own prebuild-install
@@ -40,10 +45,7 @@ let
       or (throw "torio: no node-datachannel prebuilt binary pinned for ${stdenv.hostPlatform.system}");
 in
 buildNpmPackage (finalAttrs: {
-  # npm package name (package.json "name"), not a display name — this is
-  # also the directory npm installs the package into under
-  # $out/lib/node_modules, which postInstall below depends on.
-  pname = packageJson.name;
+  pname = "torio";
   # Derived from package.json rather than hardcoded, so it can't drift from
   # what's actually built (see PR review discussion).
   inherit (packageJson) version;
@@ -59,7 +61,7 @@ buildNpmPackage (finalAttrs: {
   # Must be regenerated whenever package-lock.json changes: run
   # `nix run nixpkgs#prefetch-npm-deps -- package-lock.json` and paste the
   # hash it prints here.
-  npmDepsHash = "sha256-EY2WEWPr3R6+CMQeOc3W6w57RU03rZ3ghep/iiQWl4Q=";
+  npmDepsHash = "sha256-SvnSo2yJQUJzZXKgTW3jJfzrpPRFIPV02VxxUhenyu8=";
   # ignore-scripts for ip-set broken preinstall
   npmFlags = [ "--ignore-scripts" ];
 
@@ -77,7 +79,7 @@ buildNpmPackage (finalAttrs: {
   # macOS already has pbcopy on PATH so no wrapping is needed there.
   postInstall = ''
     tar -xzf ${finalAttrs.nodeDatachannelPrebuilt} \
-      -C $out/lib/node_modules/${finalAttrs.pname}/node_modules/node-datachannel
+      -C $out/lib/node_modules/${npmPackageName}/node_modules/node-datachannel
   ''
   + lib.optionalString stdenv.hostPlatform.isLinux ''
     wrapProgram $out/bin/torio \

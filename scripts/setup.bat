@@ -14,7 +14,7 @@ node -v
 
 rem 2. Глобальная установка
 echo Устанавливаю torio...
-npm install -g torio
+npm install -g @luxqw/torio
 
 echo.
 echo Готово! Запустите: torio

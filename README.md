@@ -1,6 +1,6 @@
 # torio
 
-[![npm](https://img.shields.io/npm/v/torio)](https://www.npmjs.com/package/torio)
+[![npm](https://img.shields.io/npm/v/@luxqw/torio)](https://www.npmjs.com/package/@luxqw/torio)
 [![GitHub](https://img.shields.io/github/license/luxqw/torio)](https://github.com/luxqw/torio)
 
 torio — это быстрый и бесшовный способ искать торрент-материалы прямо из терминала и сразу скачивать их без лишних шагов.
@@ -48,13 +48,13 @@ torio — это быстрый и бесшовный способ искать 
 3. Запустите:
 
    ```sh
-   npx torio
+   npx @luxqw/torio
    ```
 
    Или установите глобально:
 
    ```sh
-   npm install -g torio
+   npm install -g @luxqw/torio
    torio
    ```
 
@@ -65,13 +65,13 @@ torio — это быстрый и бесшовный способ искать 
 Если у вас уже установлена старая версия, обновите её:
 
 ```sh
-npm update -g torio
+npm update -g @luxqw/torio
 ```
 
 Или переустановите:
 
 ```sh
-npm install -g torio@latest
+npm install -g @luxqw/torio@latest
 ```
 
 ### Nix / NixOS

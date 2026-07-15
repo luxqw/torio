@@ -1,5 +1,5 @@
 {
-  "name": "torio",
+  "name": "@luxqw/torio",
   "version": "1.5.1",
   "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
   "type": "module",
