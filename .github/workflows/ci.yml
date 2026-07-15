@@ -5,6 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -28,9 +29,12 @@ jobs:
 
       - run: npm test
 
+  # Release is manual on purpose: hit "Run workflow" on this workflow in the
+  # Actions tab when you actually want to ship what's on main, instead of
+  # cutting a release on every push.
   release:
     needs: test
-    if: github.repository == 'luxqw/torio' && github.event_name == 'push'
+    if: github.repository == 'luxqw/torio' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
